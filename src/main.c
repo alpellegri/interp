@@ -1,0 +1,588 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "interp.h"
+#include "slp.h"
+#include "util.h"
+
+typedef enum {
+  token_punc = 1,
+  token_num,
+  token_str,
+  token_kw,
+  token_var,
+  token_op,
+} token_type_t;
+
+typedef char token_value_t[50];
+
+typedef struct token_s {
+  int unempty;
+  token_type_t type;
+  token_value_t value;
+} token_t;
+
+char *input_input = NULL;
+int input_pos = 0;
+int input_line = 1;
+int input_col = 0;
+
+// const char keywords[] = " if then else lambda λ true false ";
+const char keywords[] = " print ";
+const char digit[] = "0123456789";
+const char id_start[] = "abcdefghikjlmnopqrstuvzwxyλ_";
+const char id[] = "?!-<>=0123456789";
+const char op_char[] = "+-*/%=&|<>!";
+const char punc[] = ",;(){}[]";
+const char whitespace[] = " \t\n";
+
+token_t current;
+
+/* helper function */
+char *strdup(const char *s) {
+  char *d = checked_malloc(strlen(s) + 1); // Space for length plus nul
+  if (d == NULL)
+    return NULL; // No memory
+  strcpy(d, s);  // Copy the characters
+  return d;      // Return the new string
+}
+
+void input_init(char *ptr) {
+  printf("InputStream->init\n");
+  input_input = ptr;
+};
+
+char input_charAt(int pos) {
+  // printf("InputStream->charAt %d\n", pos);
+  return input_input[pos];
+};
+
+char input_next() {
+  // printf("InputStream->next %d\n", pos);
+  char ch = input_charAt(input_pos++);
+  if (ch == '\n') {
+    input_line++, input_col = 0;
+  } else {
+    input_col++;
+  }
+  return ch;
+};
+
+char input_peek(void) {
+  // printf("InputStream->peek %d\n", pos);
+  return input_charAt(input_pos);
+};
+
+int input_eof(void) {
+  // printf("InputStream->eof %d\n", input_pos);
+  return input_peek() == '\0';
+};
+
+void input_croak(char *str) { printf("croak char: %s \n", str); };
+
+/* tokenizer */
+static int is_keyword(char *str) {
+  int ret;
+  ret = (strstr(keywords, str) != NULL);
+  // printf("TokenStream->is_keyword %d\n", ret);
+  return ret;
+};
+
+static int is_digit(char ch) {
+  int ret;
+  char str[2] = "\0"; /* gives {\0, \0} */
+  str[0] = ch;
+  ret = (strstr(digit, str) != NULL);
+  // printf("TokenStream->is_digit %d\n", ret);
+  return ret;
+}
+
+static int is_id_start(char ch) {
+  int ret;
+  // 1return is_id_start(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
+  char str[2] = "\0"; /* gives {\0, \0} */
+  str[0] = ch;
+  ret = (strstr(id_start, str) != NULL);
+  // printf("TokenStream->is_id_start %d\n", ret);
+  return ret;
+}
+
+static int is_id(char ch) {
+  int ret;
+  // 1return is_id_start(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
+  char str[2] = "\0"; /* gives {\0, \0} */
+  str[0] = ch;
+  ret = (strstr(id, str) != NULL);
+  // printf("TokenStream->is_id %d\n", ret);
+  return ret;
+}
+
+static int is_op_char(char ch) {
+  int ret;
+  // return "+-*/%=&|<>!".indexOf(ch) >= 0;
+  char str[2] = "\0"; /* gives {\0, \0} */
+  str[0] = ch;
+  ret = (strstr(op_char, str) != NULL);
+  // printf("TokenStream->is_op_char %d\n", ret);
+  return ret;
+}
+
+static int is_punc(char ch) {
+  int ret;
+  // return ",;(){}[]".indexOf(ch) >= 0;
+  char str[2] = "\0"; /* gives {\0, \0} */
+  str[0] = ch;
+  ret = (strstr(punc, str) != NULL);
+  // printf("TokenStream->is_punc %d\n", ret);
+  return ret;
+}
+
+static int is_whitespace(char ch) {
+  int ret;
+  char str[2] = "\0"; /* gives {\0, \0} */
+  str[0] = ch;
+  ret = (strstr(whitespace, str) != NULL);
+  // printf("TokenStream->is_whitespace %d\n", ret);
+  return ret;
+}
+
+static int is_not_eol(char ch) {
+  int ret;
+  char str[2] = "\0"; /* gives {\0, \0} */
+  str[0] = ch;
+  ret = (strstr("\n", str) == NULL);
+  // printf("TokenStream->is_eol %d\n", ret);
+  return ret;
+}
+
+static int is_not_eos(char ch) {
+  int ret;
+  char str[2] = "\0"; /* gives {\0, \0} */
+  str[0] = ch;
+  ret = (strstr("\"", str) == NULL);
+  // printf("TokenStream->is_eos %d\n", ret);
+  return ret;
+}
+
+void read_while(char *str, int (*predicate)(char ch)) {
+  // printf("TokenStream->read_while\n");
+  int i = 0;
+  while (!input_eof() && predicate(input_peek())) {
+    str[i++] = input_next();
+  }
+  str[i] = '\0'; // append string terminator
+}
+
+void read_once(char *str, int (*predicate)(char ch)) {
+  // printf("TokenStream->read_while\n");
+  int i = 0;
+  if (!input_eof() && predicate(input_peek())) {
+    str[i++] = input_next();
+  }
+  str[i] = '\0'; // append string terminator
+}
+
+int read_number(token_t *token) {
+  read_while(token->value, is_digit);
+  // return { type: "num", value: parseFloat(number) };
+  token->type = token_num;
+  printf("read_number is: _%s_\n", token->value);
+  return 1;
+}
+
+int read_ident(token_t *token) {
+  read_while(token->value, is_id_start);
+  // return { type: is_keyword(id) ? "kw" : "var", value: id };
+  token->type = is_keyword(token->value) ? (token_kw) : (token_var);
+  printf("read_ident is: _%s_ (type %d)\n", token->value, token->type);
+  return 1;
+}
+
+int read_punc(token_t *token) {
+  read_once(token->value, is_punc);
+  // return { type: is_keyword(id) ? "kw" : "var", value: id };
+  token->type = token_punc;
+  printf("read_punc is:  _%s_\n", token->value);
+  return 1;
+}
+
+int read_op_char(token_t *token) {
+  read_while(token->value, is_op_char);
+  // return { type: is_keyword(id) ? "kw" : "var", value: id };
+  token->type = token_op;
+  printf("read_op_char is: _%s_\n", token->value);
+  return 1;
+}
+
+int read_string(token_t *token) {
+  read_while(token->value, is_not_eos);
+  // return { type: "str", value: read_escaped('"') };
+  token->type = token_str;
+  printf("read_string is:  _%s_\n", token->value);
+  return 1;
+}
+
+int read_comment(token_t *token) {
+  // read_while(function(ch){ return ch != "\n" });
+  read_while(token->value, is_not_eol);
+  printf("skip_comment is: _%s_\n", token->value);
+  // input.next();
+  return 1;
+}
+
+int read_next(token_t *token) {
+  // printf("TokenStream->read_next\n");
+  int ret = 1;
+  read_while(token->value, is_whitespace);
+  if (input_eof()) {
+    ret = 0;
+  } else {
+    current.unempty = 1;
+    char ch = input_peek();
+    if (ch == '#') {
+      input_next(); // consume first #
+      read_comment(token);
+      read_next(token);
+      return 1;
+    }
+    if (ch == '\"') {
+      input_next(); // consume first "
+      read_string(token);
+      input_next(); // consume last "
+      return 1;
+    }
+    if (is_digit(ch)) {
+      read_number(token);
+      return 1;
+    }
+    if (is_id_start(ch)) {
+      read_ident(token);
+      return 1;
+    }
+    if (is_punc(ch)) {
+      // return { type: "punc", value: input.next() };
+      read_punc(token);
+      return 1;
+    }
+    if (is_op_char(ch)) {
+      // return { type: "op", value: read_while(is_op_char)};
+      read_op_char(token);
+      return 1;
+    }
+    char str[2] = "\0"; /* gives {\0, \0} */
+    str[0] = ch;
+    input_croak(str);
+    ret = 0;
+  }
+  return ret;
+}
+
+int token_peek(token_t *token) {
+  // return current || (current = read_next());
+  if (current.unempty == 0) {
+    read_next(&current);
+  }
+  memcpy(token, &current, sizeof(token_t));
+  return 1;
+}
+
+int token_next() {
+  memset(&current, 0x00, sizeof(token_t));
+  read_next(&current);
+  return 1;
+}
+
+int token_eof(void) {
+  printf("token_eof: %d\n", current.unempty);
+  return (current.unempty == 0);
+}
+
+void token_croak(char *str) {
+  input_croak(str);
+  exit(0);
+}
+
+int token_is_punc(char *ch) {
+  token_t tok;
+  int ret = 0;
+  token_peek(&tok);
+  if ((tok.type == token_punc) && (strcmp(ch, tok.value) == 0)) {
+    ret = 1;
+  }
+  return ret;
+}
+
+int token_is_var(token_t *tok) {
+  int ret = 0;
+  token_peek(tok);
+  if (tok->type == token_var) {
+    ret = 1;
+  }
+  return ret;
+}
+
+int token_is_kw(char *kw) {
+  token_t tok;
+  int ret = 0;
+  token_peek(&tok);
+  if ((tok.type == token_kw) && (strcmp(kw, tok.value) == 0)) {
+    ret = 1;
+  }
+  return ret;
+}
+
+int token_is_op(char *op) {
+  token_t tok;
+  int ret = 0;
+  token_peek(&tok);
+  if ((tok.type == token_op) && (strcmp(op, tok.value) == 0)) {
+    ret = 1;
+  }
+  return ret;
+}
+
+int token_is_op_tok(void) {
+  token_t tok;
+  int ret = 0;
+  token_peek(&tok);
+  if (tok.type == token_op) {
+    ret = 1;
+  }
+  return ret;
+}
+
+int token_is_num(void) {
+  token_t tok;
+  int ret = 0;
+  token_peek(&tok);
+  // return tok && tok.type == "op" && (!op || tok.value == op) && tok;
+  if (tok.type == token_num) {
+    ret = 1;
+  }
+  return ret;
+}
+
+void token_skip_punc(char *ch) {
+  if (token_is_punc(ch)) {
+    token_next();
+  } else {
+    // input.croak("Expecting punctuation: \"" + ch + "\"");
+    token_croak("Expecting punctuation:");
+  }
+}
+
+void token_skip_kw(char *kw) {
+  if (token_is_kw(kw)) {
+    token_next();
+  } else {
+    // input.croak("Expecting keyword: \"" + kw + "\"");
+    token_croak("Expecting keyword:");
+  }
+}
+
+void token_skip_op(char *op) {
+  if (token_is_op(op)) {
+    token_next();
+  } else {
+    // input.croak("Expecting operator: \"" + op + "\"");
+    token_croak("Expecting operator:");
+  }
+}
+
+A_stm parseStm(void);
+A_exp parseExp(void);
+A_expList parseExpList(void);
+
+char *parse_varname() {
+  token_t tok;
+  memset(&tok, 0x00, sizeof(token_t));
+  token_peek(&tok);
+  if (tok.type != token_var) {
+    printf("Expecting variable name: %d <-> %d\n", tok.type, token_var);
+    token_croak("Expecting variable name");
+  }
+  return strdup(tok.value);
+}
+
+A_exp parse_atom(void) {
+  A_exp exp;
+  token_t tok;
+
+  token_peek(&tok);
+  printf("parse_atom: token_peek %s\n", tok.value);
+  if (token_is_punc("(") == 1) {
+    token_next();
+    exp = parseExp();
+    token_skip_punc(")");
+    return exp;
+  } else if (token_is_num() == 1) {
+    exp = A_NumExp(atoi(tok.value));
+    token_next();
+    return exp;
+  } else if (token_is_var(&tok) == 1) {
+    exp = A_IdExp(strdup(tok.value));
+    token_next();
+    return exp;
+  }
+
+  printf("error parseExp\n");
+  exit(0);
+  return NULL;
+}
+
+A_exp maybeBinary(A_exp left, int prec) {
+  A_exp right;
+  token_t tok;
+  token_peek(&tok);
+  printf("maybeBinary: token_peek %s\n", tok.value);
+  if (token_is_op_tok() == 1) {
+    A_binop oper;
+
+    token_next();
+    right = maybeBinary(parse_atom(), 0);
+    if ((strcmp("+", tok.value) == 0)) {
+      oper = A_add;
+    } else if ((strcmp("-", tok.value) == 0)) {
+      oper = A_sub;
+    } else if ((strcmp("*", tok.value) == 0)) {
+      oper = A_mul;
+    } else if ((strcmp("/", tok.value) == 0)) {
+      oper = A_div;
+    } else if ((strcmp("==", tok.value) == 0)) {
+      oper = A_eq;
+    } else if ((strcmp("!=", tok.value) == 0)) {
+      oper = A_ne;
+    } else if ((strcmp("<=", tok.value) == 0)) {
+      oper = A_le;
+    } else if ((strcmp("<", tok.value) == 0)) {
+      oper = A_lt;
+    } else if ((strcmp(">=", tok.value) == 0)) {
+      oper = A_ge;
+    } else if ((strcmp(">", tok.value) == 0)) {
+      oper = A_gt;
+    } else {
+      printf("error maybeBinary\n");
+      exit(0);
+    }
+    return A_OpExp(left, oper, right);
+  }
+  return left;
+}
+
+A_exp parseExp(void) {
+  token_t tok;
+  token_peek(&tok);
+  printf("parseExp: token_peek %s\n", tok.value);
+  return maybeBinary(parse_atom(), 0);
+}
+
+A_expList parseExpList(void) {
+  A_expList explist;
+  token_t tok;
+
+  token_peek(&tok);
+  printf("parseExpList: token_peek %s\n", tok.value);
+  explist = A_PairExpList(parseExp(), NULL);
+  if (token_is_punc(",") == 1) {
+    token_skip_punc(",");
+    explist->tail = parseExpList();
+    return explist;
+  } else if (token_is_punc(")") == 1) {
+    token_skip_punc(")");
+    return explist;
+  }
+
+  printf("error parseExpList\n");
+  exit(0);
+  return NULL;
+}
+
+A_stm parseStm(void) {
+  token_t tok;
+  A_stm stm;
+
+  token_peek(&tok);
+  printf("parseStm: token_peek %s\n", tok.value);
+  if (token_is_var(&tok) == 1) {
+    char *varname = parse_varname();
+    token_next();
+    token_skip_op("=");
+    stm = A_AssignStm(varname, parseExp());
+  } else if (token_is_kw("print") == 1) {
+    token_skip_kw("print");
+    token_skip_punc("(");
+    stm = A_PrintStm(parseExpList());
+  }
+  if (token_is_punc(";")) {
+    return stm;
+  }
+
+  printf("error parseStm\n");
+  exit(0);
+  return NULL;
+}
+
+A_stm parse(void) {
+  int i = 0;
+  token_t tok;
+  A_stm code;
+  A_stm stm;
+
+  token_peek(&tok);
+  printf("[%d]\n", i++);
+  stm = A_CompoundStm(NULL, NULL);
+  code = stm;
+  stm->u.compound.stm1 = parseStm();
+  while (!token_eof()) {
+    printf("[%d]\n", i++);
+    printf("token_skip_punc\n");
+    token_skip_punc(";");
+    if (!token_eof()) {
+      stm->u.compound.stm2 = A_CompoundStm(NULL, NULL);
+      stm = stm->u.compound.stm2;
+      stm->u.compound.stm1 = parseStm();
+    }
+  }
+
+  return code;
+}
+
+int main(void) {
+  A_stm stm;
+
+#if 0
+  char code[] =
+    "a = 5+(3==2);\n"
+    "b = 10*a;\n"
+    "print(b);\n";
+#else
+  char code[] =
+    "a = 1;\n"
+    "print(a);\n"
+    "a = a+1;\n"
+    "print(a);\n"
+    "a = a+1;\n"
+    "print(a);\n"
+    "a = a+1;\n"
+    "print(a);\n"
+    "a = a+1;\n"
+    "print(a);\n"
+    "a = a+1;\n";
+#endif
+
+  printf("load program\n");
+  input_init(code);
+
+  printf("parse program\n");
+  stm = parse();
+
+  printf("display program\n");
+  display_stm(stm);
+
+  printf("interp program\n");
+  // the evaluation function
+  interp(stm);
+
+  return 0;
+}
