@@ -140,6 +140,10 @@ A_stm parseStm(void) {
   return NULL;
 }
 
+void parse_init(char *ptr) {
+  token_init(ptr);
+};
+
 A_stm parse(void) {
   int i = 0;
   token_t tok;

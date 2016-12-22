@@ -261,6 +261,10 @@ int read_next(token_t *token) {
   return ret;
 }
 
+void token_init(char *ptr) {
+  input_init(ptr);
+};
+
 int token_peek(token_t *token) {
   // return current || (current = read_next());
   if (current.unempty == 0) {

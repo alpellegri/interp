@@ -14,9 +14,19 @@ void *checked_malloc(int len) {
     printf("Ran out of memory!\n");
     exit(1);
   } else {
-    printf("malloc size: %d\n", len);
+    printf("malloc ptr %x, size: %d\n", (unsigned int)p, len);
   }
   return p;
+}
+
+void checked_free(void *p) {
+  if (p == 0) {
+    printf("checked_free error\n");
+    exit(1);
+  } else {
+    printf("free ptr %x\n", (unsigned int)p);
+    free(p);
+  }
 }
 
 string String(char *s) {

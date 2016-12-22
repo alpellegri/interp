@@ -20,44 +20,25 @@ IntAndTable_ IntAndTable(int i, Table_ t) {
   return it;
 }
 
-void interp(A_stm stm) { interpStm(stm, NULL); }
-
-Table_ ctx = NULL;
-void interp_context(A_stm stm) { ctx = interpStm(stm, ctx); }
-
-void interp_multi(A_stm *stm) {
-  int i = 0;
-
-  ctx = NULL;
-  while (stm[i] != NULL) {
-    ctx = interpStm(stm[i++], ctx);
-  }
+Table_ update(Table_ t, string id, int value) {
+  printf("update: id: %s, value: %d\n", id, value);
+  return Table(id, value, t);
 }
 
-Table_ interpStm(A_stm s, Table_ t) {
-  IntAndTable_ it;
-
-  if (s != NULL) {
-    switch (s->kind) {
-    case A_compoundStm:
-      t = interpStm(s->u.compound.stm1, t);
-      t = interpStm(s->u.compound.stm2, t);
-      return t;
-    case A_assignStm:
-      it = interpExp(s->u.assign.exp, t);
-      t = update(it->t, s->u.assign.id, it->i);
-      return t;
-    case A_printStm:
-      it = interpExpList(s->u.print.exps, t);
-      printf("A_printStm %d\n", it->i);
-      return it->t;
-    default:
-      /* This should not happen! */
-      assert(!"Wrong kind-value for A_stm!");
+int lookup(Table_ t, string key) {
+  // printf("lookup ptr: %x, key: %s\n", t, key);
+  Table_ temp = t;
+  while (temp != NULL) {
+    // printf("lookup while: id: %s, key: %s\n", temp->id, key);
+    // if (temp->id == key) {
+    if (strcmp(temp->id, key) == 0) {
+      return t->value;
     }
+    temp = temp->tail;
   }
 
-  return t;
+  /* This should not happen! */
+  assert(!"Table_t pointer should not be NULL!");
 }
 
 IntAndTable_ interpExp(A_exp e, Table_ t) {
@@ -144,23 +125,33 @@ IntAndTable_ interpExpList(A_expList expList, Table_ t) {
   }
 }
 
-Table_ update(Table_ t, string id, int value) {
-  printf("update: id: %s, value: %d\n", id, value);
-  return Table(id, value, t);
-}
+Table_ interpStm(A_stm s, Table_ t) {
+  IntAndTable_ it;
 
-int lookup(Table_ t, string key) {
-  // printf("lookup ptr: %x, key: %s\n", t, key);
-  Table_ temp = t;
-  while (temp != NULL) {
-    // printf("lookup while: id: %s, key: %s\n", temp->id, key);
-    // if (temp->id == key) {
-    if (strcmp(temp->id, key) == 0) {
-      return t->value;
+  switch (s->kind) {
+  case A_compoundStm:
+    t = interpStm(s->u.compound.stm1, t);
+    if (s->u.compound.stm2) {
+      t = interpStm(s->u.compound.stm2, t);
     }
-    temp = temp->tail;
+    return t;
+  case A_assignStm:
+    it = interpExp(s->u.assign.exp, t);
+    t = update(it->t, s->u.assign.id, it->i);
+    return t;
+  case A_printStm:
+    it = interpExpList(s->u.print.exps, t);
+    printf("A_printStm %d\n", it->i);
+    return it->t;
+  default:
+    /* This should not happen! */
+    assert(!"Wrong kind-value for A_stm!");
   }
 
-  /* This should not happen! */
-  assert(!"Table_t pointer should not be NULL!");
+  return t;
 }
+
+void interp(A_stm stm) { interpStm(stm, NULL); }
+
+Table_ ctx = NULL;
+void interp_context(A_stm stm) { ctx = interpStm(stm, ctx); }

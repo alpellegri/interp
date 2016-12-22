@@ -2,14 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "token.h"
 #include "parser.h"
 #include "interp.h"
 
 int main(void) {
   A_stm stm;
 
-#if 0
+#if 1
   char code[] =
     "a = 5+(3==2);\n"
     "b = 10*a;\n"
@@ -30,7 +29,7 @@ int main(void) {
 #endif
 
   printf("load program\n");
-  input_init(code);
+  parse_init(code);
 
   printf("parse program\n");
   stm = parse();
