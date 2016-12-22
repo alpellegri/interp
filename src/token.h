@@ -1,6 +1,10 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
   token_punc = 1,
   token_num,
@@ -32,5 +36,9 @@ extern int token_is_num(void);
 extern void token_skip_punc(char *ch);
 extern void token_skip_kw(char *kw);
 extern void token_skip_op(char *op);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* TOKEN_H */

@@ -46,6 +46,10 @@
 
 #include "util.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
   A_add,
   A_sub,
@@ -129,5 +133,9 @@ extern A_expList A_PairExpList(A_exp head, A_expList tail);
 extern void display_stm(A_stm stm);
 extern void display_exp(A_exp exp);
 extern void display_expList(A_expList expList);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* SLP_H */

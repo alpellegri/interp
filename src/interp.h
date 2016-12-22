@@ -1,10 +1,12 @@
 #ifndef INTERP_H
 #define INTERP_H
 
-#include <stdlib.h>
-
 #include "slp.h"
 #include "util.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /* store value of variables */
 typedef struct table *Table_;
@@ -58,5 +60,9 @@ extern IntAndTable_ interpExpList(A_expList expList, Table_ t);
  */
 extern Table_ update(Table_ t, string id, int value);
 extern int lookup(Table_ t, string key);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INTERP_H */

@@ -1,7 +1,9 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include <assert.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef char *string;
 typedef char bool;
@@ -21,5 +23,9 @@ struct U_boolList_ {
 };
 
 extern U_boolList U_BoolList(bool head, U_boolList tail);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* UTIL_H */
