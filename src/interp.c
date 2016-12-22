@@ -5,32 +5,46 @@
 #include "slp.h"
 #include "util.h"
 
-Table_ Table(string id, int value, struct table *tail) {
+void display_Table(Table_ t) {
+  Table_ temp = t;
+  printf("display_Table\n");
+  while (temp != NULL) {
+    printf("ptr: %x, id: %s, value: %d\n", (unsigned int)temp, temp->id,
+           temp->value);
+    temp = temp->tail;
+  }
+}
+
+// linked list of variables (id,value)
+Table_ Table(string id, int value, Table_ tail) {
   Table_ t = checked_malloc(sizeof(*t));
   t->id = id;
   t->value = value;
   t->tail = tail;
+  // display_Table(t);
   return t;
 }
 
+#if 0
 IntAndTable_ IntAndTable(int i, Table_ t) {
+  printf("IntAndTable: ptr: %x, value: %d\n", (unsigned int)t, i);
   IntAndTable_ it = checked_malloc(sizeof(*it));
   it->i = i;
   it->t = t;
   return it;
 }
-
-Table_ update(Table_ t, string id, int value) {
-  printf("update: id: %s, value: %d\n", id, value);
-  return Table(id, value, t);
+#else
+struct intAndTable _it = {0, NULL};
+IntAndTable_ IntAndTable(int i, Table_ t) {
+  _it.i = i;
+  _it.t = t;
+  return &_it;
 }
+#endif
 
 int lookup(Table_ t, string key) {
-  // printf("lookup ptr: %x, key: %s\n", t, key);
   Table_ temp = t;
   while (temp != NULL) {
-    // printf("lookup while: id: %s, key: %s\n", temp->id, key);
-    // if (temp->id == key) {
     if (strcmp(temp->id, key) == 0) {
       return t->value;
     }
@@ -41,14 +55,38 @@ int lookup(Table_ t, string key) {
   assert(!"Table_t pointer should not be NULL!");
 }
 
+int remove_old_id(Table_ t, string key) {
+  Table_ temp = t;
+  while (temp->tail != NULL) {
+    if (strcmp(temp->tail->id, key) == 0) {
+      Table_ temp2 = temp->tail;
+      if (temp->tail->tail != NULL) {
+        temp->tail = temp->tail->tail;
+      } else {
+        temp->tail = NULL;
+      }
+      checked_free(temp2);
+      return 1;
+    }
+    temp = temp->tail;
+  }
+  return 0;
+}
+
+// construct a new Table on the head
+Table_ update(Table_ t, string id, int value) {
+  t = Table(id, value, t);
+  remove_old_id(t, id);
+  // display_Table(t);
+  return t;
+}
+
 IntAndTable_ interpExp(A_exp e, Table_ t) {
 
   switch (e->kind) {
   case A_idExp:
-    // printf("A_idExp: %s\n", e->u.id);
     return IntAndTable(lookup(t, e->u.id), t);
   case A_numExp:
-    // printf("A_numExp: %d\n", e->u.num);
     return IntAndTable(e->u.num, t);
   case A_opExp: {
     int lval, rval;
@@ -113,7 +151,7 @@ IntAndTable_ interpExpList(A_expList expList, Table_ t) {
   switch (expList->kind) {
   case A_pairExpList:
     it = interpExp(expList->head, t);
-    // printf("%d ", it->i);
+    // printf("%d\n", it->i);
     if (expList->tail == NULL) {
       return it;
     } else {
@@ -133,6 +171,8 @@ Table_ interpStm(A_stm s, Table_ t) {
     t = interpStm(s->u.compound.stm1, t);
     if (s->u.compound.stm2) {
       t = interpStm(s->u.compound.stm2, t);
+    } else {
+      printf("interpStm end\n");
     }
     return t;
   case A_assignStm:

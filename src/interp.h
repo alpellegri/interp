@@ -6,13 +6,14 @@
 #include "slp.h"
 #include "util.h"
 
+/* store value of variables */
 typedef struct table *Table_;
 struct table {
   string id;
   int value;
   Table_ tail;
 };
-extern Table_ Table(string id, int value, struct table *tail);
+extern Table_ Table(string id, int value, Table_ tail);
 
 /*
  * Interpreting expressions is more complicated than interpreting statements,

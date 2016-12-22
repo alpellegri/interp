@@ -46,9 +46,6 @@
 
 #include "util.h"
 
-typedef struct A_stm_ *A_stm;
-typedef struct A_exp_ *A_exp;
-typedef struct A_expList_ *A_expList;
 typedef enum {
   A_add,
   A_sub,
@@ -62,9 +59,9 @@ typedef enum {
   A_gt
 } A_binop;
 
-extern void display_stm(A_stm stm);
-extern void display_exp(A_exp exp);
-extern void display_expList(A_expList expList);
+typedef struct A_stm_ *A_stm;
+typedef struct A_exp_ *A_exp;
+typedef struct A_expList_ *A_expList;
 
 /*
  * Stm -> Stm; Stm       (CompoundStm)
@@ -128,5 +125,9 @@ struct A_expList_ {
   A_expList tail;
 };
 extern A_expList A_PairExpList(A_exp head, A_expList tail);
+
+extern void display_stm(A_stm stm);
+extern void display_exp(A_exp exp);
+extern void display_expList(A_expList expList);
 
 #endif /* SLP_H */

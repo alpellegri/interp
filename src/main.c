@@ -2,31 +2,33 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "parser.h"
 #include "interp.h"
+#include "parser.h"
 
 int main(void) {
   A_stm stm;
 
-#if 1
-  char code[] =
-    "a = 5+(3==2);\n"
-    "b = 10*a;\n"
-    "print(b);\n";
-#else
-  char code[] =
-    "a = 1;\n"
-    "print(a);\n"
-    "a = a+1;\n"
-    "print(a);\n"
-    "a = a+1;\n"
-    "print(a);\n"
-    "a = a+1;\n"
-    "print(a);\n"
-    "a = a+1;\n"
-    "print(a);\n"
-    "a = a+1;\n";
-#endif
+  // char code[] = "a=1;\n"
+  //               "b=2;\n"
+  //               "a=3;\n"
+  //               "print(1,2+1,a);\n";
+
+  // char code[] = "a = 5+(3==2);\n"
+  //               "b = 10*a;\n"
+  //               "print(b);\n";
+
+  char code[] = "a = 1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n";
 
   printf("load program\n");
   parse_init(code);
@@ -34,8 +36,8 @@ int main(void) {
   printf("parse program\n");
   stm = parse();
 
-  printf("display program\n");
-  display_stm(stm);
+  // printf("display program\n");
+  // display_stm(stm);
 
   printf("interp program\n");
   // the evaluation function
