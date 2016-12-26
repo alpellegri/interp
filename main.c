@@ -13,22 +13,22 @@ int main(void) {
   //               "a=3;\n"
   //               "print(1,2+1,a);\n";
 
-  // char code[] = "a = 5+(3==2);\n"
-  //               "b = 10*a;\n"
-  //               "print(b);\n";
+  char code[] = "a = 5+(3==2);\n"
+                "b = 10*a;\n"
+                "print(b);\n";
 
-  char code[] = "a = 1;\n"
-                "print(a);\n"
-                "a = a+1;\n"
-                "print(a);\n"
-                "a = a+1;\n"
-                "print(a);\n"
-                "a = a+1;\n"
-                "print(a);\n"
-                "a = a+1;\n"
-                "print(a);\n"
-                "a = a+1;\n"
-                "print(a);\n";
+  // char code[] = "a = 1;\n"
+  //               "print(a);\n"
+  //               "a = a+1;\n"
+  //               "print(a);\n"
+  //               "a = a+1;\n"
+  //               "print(a);\n"
+  //               "a = a+1;\n"
+  //               "print(a);\n"
+  //               "a = a+1;\n"
+  //               "print(a);\n"
+  //               "a = a+1;\n"
+  //               "print(a);\n";
 
   printf("load program\n");
   parse_init(code);

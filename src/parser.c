@@ -106,7 +106,6 @@ A_expList parseExpList(void) {
     explist->tail = parseExpList();
     return explist;
   } else if (token_is_punc(")") == 1) {
-    token_skip_punc(")");
     return explist;
   }
 
@@ -130,6 +129,7 @@ A_stm parseStm(void) {
     token_skip_kw("print");
     token_skip_punc("(");
     stm = A_PrintStm(parseExpList());
+    token_skip_punc(")");
   }
   if (token_is_punc(";")) {
     return stm;
@@ -146,7 +146,7 @@ A_stm parse(void) {
   int i = 0;
   token_t tok;
   A_stm code;
-  A_stm stm;
+  A_stm stm = NULL;
 
   token_peek(&tok);
   printf("[%d]\n", i++);
