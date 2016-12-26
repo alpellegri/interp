@@ -12,7 +12,7 @@ int input_line = 1;
 int input_col = 0;
 
 // const char keywords[] = " if then else lambda λ true false ";
-const char keywords[] = " print if then else ";
+const char keywords[] = " print ";
 const char digit[] = "0123456789";
 const char id_start[] = "abcdefghikjlmnopqrstuvzwxyλ_";
 const char id[] = "?!-<>=0123456789";

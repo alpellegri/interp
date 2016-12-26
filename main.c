@@ -36,8 +36,8 @@ int main(void) {
   printf("parse program\n");
   stm = parse();
 
-  // printf("display program\n");
-  // display_stm(stm);
+  printf("display program\n");
+  display_stm(stm);
 
   printf("interp program\n");
   // the evaluation function
