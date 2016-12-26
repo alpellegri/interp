@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "token.h"
 #include "slp.h"
+#include "token.h"
 #include "util.h"
 
 char *input_input = NULL;
@@ -21,15 +21,6 @@ const char punc[] = ",;(){}[]";
 const char whitespace[] = " \t\n";
 
 token_t current;
-
-/* helper function */
-char *strdup(const char *s) {
-  char *d = checked_malloc(strlen(s) + 1); // Space for length plus nul
-  if (d == NULL)
-    return NULL; // No memory
-  strcpy(d, s);  // Copy the characters
-  return d;      // Return the new string
-}
 
 void input_init(char *ptr) {
   printf("InputStream->init\n");
@@ -261,9 +252,7 @@ int read_next(token_t *token) {
   return ret;
 }
 
-void token_init(char *ptr) {
-  input_init(ptr);
-};
+void token_init(char *ptr) { input_init(ptr); };
 
 int token_peek(token_t *token) {
   // return current || (current = read_next());
@@ -287,7 +276,7 @@ int token_eof(void) {
 
 void token_croak(char *str) {
   input_croak(str);
-  exit(0);
+  _exit(0);
 }
 
 int token_is_punc(char *ch) {

@@ -8,6 +8,17 @@
 
 #include "util.h"
 
+/* helper function */
+char *_strdup(const char *s) {
+  char *d = checked_malloc(strlen(s) + 1); // Space for length plus nul
+  if (d == NULL)
+    return NULL; // No memory
+  strcpy(d, s);  // Copy the characters
+  return d;      // Return the new string
+}
+
+void _exit(int v) { exit(v); }
+
 void *checked_malloc(int len) {
   void *p = calloc(len, 1);
   if (!p) {
@@ -22,7 +33,7 @@ void *checked_malloc(int len) {
 void checked_free(void *p) {
   if (p == 0) {
     printf("checked_free error\n");
-    exit(1);
+    _exit(1);
   } else {
     printf("free ptr %x\n", (unsigned int)p);
     free(p);

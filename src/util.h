@@ -11,6 +11,8 @@ typedef char bool;
 #define TRUE 1
 #define FALSE 0
 
+extern char *_strdup(const char *s);
+extern void _exit(int v);
 extern void *checked_malloc(int len);
 extern void checked_free(void *p);
 extern string String(char *);

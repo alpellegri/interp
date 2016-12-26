@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "token.h"
 #include "parser.h"
 #include "slp.h"
+#include "token.h"
 #include "util.h"
 
 A_stm parseStm(void);
@@ -19,7 +19,7 @@ char *parse_varname() {
     printf("Expecting variable name: %d <-> %d\n", tok.type, token_var);
     token_croak("Expecting variable name");
   }
-  return strdup(tok.value);
+  return _strdup(tok.value);
 }
 
 A_exp parse_atom(void) {
@@ -38,13 +38,13 @@ A_exp parse_atom(void) {
     token_next();
     return exp;
   } else if (token_is_var(&tok) == 1) {
-    exp = A_IdExp(strdup(tok.value));
+    exp = A_IdExp(_strdup(tok.value));
     token_next();
     return exp;
   }
 
   printf("error parseExp\n");
-  exit(0);
+  _exit(0);
   return NULL;
 }
 
@@ -80,7 +80,7 @@ A_exp maybeBinary(A_exp left, int prec) {
       oper = A_gt;
     } else {
       printf("error maybeBinary\n");
-      exit(0);
+      _exit(0);
     }
     return A_OpExp(left, oper, right);
   }
@@ -111,7 +111,7 @@ A_expList parseExpList(void) {
   }
 
   printf("error parseExpList\n");
-  exit(0);
+  _exit(0);
   return NULL;
 }
 
@@ -136,13 +136,11 @@ A_stm parseStm(void) {
   }
 
   printf("error parseStm\n");
-  exit(0);
+  _exit(0);
   return NULL;
 }
 
-void parse_init(char *ptr) {
-  token_init(ptr);
-};
+void parse_init(char *ptr) { token_init(ptr); };
 
 A_stm parse(void) {
   int i = 0;
