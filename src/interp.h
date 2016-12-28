@@ -25,26 +25,25 @@ extern Table_ Table(string id, int value, Table_ tail);
  * statements will be accomplished by interpreter side effects, however.)  Part
  * of the solution for this is to use this struct.
  */
-typedef struct intAndTable *IntAndTable_;
-struct intAndTable {
+typedef struct intAndTable_s *IntAndTable_p;
+typedef struct intAndTable_s {
   int i;
   Table_ t;
-};
-extern IntAndTable_ IntAndTable(int i, Table_ t);
+} intAndTable_t;
+extern IntAndTable_p IntAndTable(int i, Table_ t);
 
 /*
  * "Interpret" a program in this language.
  */
-extern void interp(A_stm_p stm);
-extern void interp_context(A_stm_p stm);
-extern void interp_multi(A_stm_p *stm);
+extern void interp(A_prog_p stm);
+extern void interp_context(A_prog_p stm);
 
 /*
  * Produce a new table from the specified table.  The new table is just like
  * the original one except that some identifiers map to different integers as
  * a result of the given statement.
  */
-extern Table_ interpStm(A_stm_p s, Table_ t);
+extern Table_ interpStm(A_prog_p s, Table_ t);
 
 /*
  * The result of interpreting an expression e1 with table t1 is an integer
@@ -52,8 +51,8 @@ extern Table_ interpStm(A_stm_p s, Table_ t);
  * subexpressions (such as an OpExp), the table t2 resulting from the first
  * subexpression can be used in processing the second subexpression.
  */
-extern IntAndTable_ interpExp(A_exp_p e, Table_ t);
-extern IntAndTable_ interpExpList(A_expList_p expList, Table_ t);
+extern IntAndTable_p interpExp(A_exp_p e, Table_ t);
+extern IntAndTable_p interpExpList(A_expList_p expList, Table_ t);
 
 /*
  * Put a new element at the head of the linked list.

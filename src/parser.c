@@ -7,7 +7,7 @@
 #include "token.h"
 #include "util.h"
 
-A_stm_p parseStm(void);
+A_prog_p parseStm(void);
 A_exp_p parseExp(void);
 A_expList_p parseExpList(void);
 
@@ -114,9 +114,9 @@ A_expList_p parseExpList(void) {
   return NULL;
 }
 
-A_stm_p parseStm(void) {
+A_prog_p parseStm(void) {
   token_t tok;
-  A_stm_p stm;
+  A_prog_p stm;
 
   token_peek(&tok);
   printf("parseStm: token_peek %s\n", tok.value);
@@ -140,27 +140,29 @@ A_stm_p parseStm(void) {
   return NULL;
 }
 
-void parse_init(char *ptr) { token_init(ptr); };
+void parse_init(char *ptr) {
+  /* init token */
+  token_init(ptr);
+};
 
-A_stm_p parse(void) {
+A_prog_p parse(void) {
   int i = 0;
   token_t tok;
-  A_stm_p code;
-  A_stm_p stm = NULL;
+  A_prog_p code;
+  A_prog_p stm = NULL;
 
   token_peek(&tok);
   printf("[%d]\n", i++);
-  stm = A_CompoundStm(NULL, NULL);
+  stm = A_ProgStm(NULL, NULL);
   code = stm;
-  stm->u.compound.stm1 = parseStm();
   while (!token_eof()) {
     printf("[%d]\n", i++);
     printf("token_skip_punc\n");
+    stm->u.prog = parseStm();
     token_skip_punc(";");
     if (!token_eof()) {
-      stm->u.compound.stm2 = A_CompoundStm(NULL, NULL);
-      stm = stm->u.compound.stm2;
-      stm->u.compound.stm1 = parseStm();
+      stm->tail = A_ProgStm(NULL, NULL);
+      stm = stm->tail;
     }
   }
 

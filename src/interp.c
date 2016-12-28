@@ -27,16 +27,16 @@ Table_ Table(string id, int value, Table_ tail) {
 }
 
 #if 0
-IntAndTable_ IntAndTable(int i, Table_ t) {
+IntAndTable_p IntAndTable(int i, Table_ t) {
   printf("IntAndTable: ptr: %x, value: %d\n", (unsigned int)t, i);
-  IntAndTable_ it = checked_malloc(sizeof(*it));
+  IntAndTable_p it = checked_malloc(sizeof(*it));
   it->i = i;
   it->t = t;
   return it;
 }
 #else
-struct intAndTable _it = {0, NULL};
-IntAndTable_ IntAndTable(int i, Table_ t) {
+intAndTable_t _it = {0, NULL};
+IntAndTable_p IntAndTable(int i, Table_ t) {
   _it.i = i;
   _it.t = t;
   return &_it;
@@ -82,7 +82,7 @@ Table_ update(Table_ t, string id, int value) {
   return t;
 }
 
-IntAndTable_ interpExp(A_exp_p e, Table_ t) {
+IntAndTable_p interpExp(A_exp_p e, Table_ t) {
 
   switch (e->kind) {
   case A_idExp:
@@ -91,7 +91,7 @@ IntAndTable_ interpExp(A_exp_p e, Table_ t) {
     return IntAndTable(e->u.num, t);
   case A_opExp: {
     int lval, rval;
-    IntAndTable_ it_tmp;
+    IntAndTable_p it_tmp;
 
     it_tmp = interpExp(e->u.op.left, t);
     lval = it_tmp->i;
@@ -137,17 +137,14 @@ IntAndTable_ interpExp(A_exp_p e, Table_ t) {
     // printf("A_opExp lvalue: %d, rvalue: %d\n", lval, rval);
     return IntAndTable(value, it_tmp->t);
   }
-  case A_eseqExp:
-    t = interpStm(e->u.eseq.stm, t);
-    return interpExp(e->u.eseq.exp, t);
   default:
     /* This should not happen! */
     assert(!"Wrong kind-value for A_exp_p!");
   }
 }
 
-IntAndTable_ interpExpList(A_expList_p expList, Table_ t) {
-  IntAndTable_ it;
+IntAndTable_p interpExpList(A_expList_p expList, Table_ t) {
+  IntAndTable_p it;
 
   switch (expList->kind) {
   case A_pairExpList:
@@ -164,14 +161,14 @@ IntAndTable_ interpExpList(A_expList_p expList, Table_ t) {
   }
 }
 
-Table_ interpStm(A_stm_p s, Table_ t) {
-  IntAndTable_ it;
+Table_ interpStm(A_prog_p s, Table_ t) {
+  IntAndTable_p it;
 
   switch (s->kind) {
-  case A_compoundStm:
-    t = interpStm(s->u.compound.stm1, t);
-    if (s->u.compound.stm2) {
-      t = interpStm(s->u.compound.stm2, t);
+  case A_progStm:
+    t = interpStm(s->u.prog, t);
+    if (s->tail) {
+      t = interpStm(s->tail, t);
     } else {
       printf("interpStm end\n");
     }
@@ -182,20 +179,20 @@ Table_ interpStm(A_stm_p s, Table_ t) {
     return t;
   case A_printStm:
     it = interpExpList(s->u.print.exps, t);
-    printf("A_printStm %d\n", it->i);
+    printf("%d", it->i);
     return it->t;
   case A_ifStm:
     it = interpExp(s->u.if_kw.exp, t);
     return it->t;
   default:
     /* This should not happen! */
-    assert(!"Wrong kind-value for A_stm_p!");
+    assert(!"Wrong kind-value for A_prog_p!");
   }
 
   return t;
 }
 
-void interp(A_stm_p stm) { interpStm(stm, NULL); }
+void interp(A_prog_p stm) { interpStm(stm, NULL); }
 
 Table_ ctx = NULL;
-void interp_context(A_stm_p stm) { ctx = interpStm(stm, ctx); }
+void interp_context(A_prog_p stm) { ctx = interpStm(stm, ctx); }

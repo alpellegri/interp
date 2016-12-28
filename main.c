@@ -6,14 +6,14 @@
 #include "parser.h"
 
 int main(void) {
-  A_stm_p stm;
+  A_prog_p prog;
 
   // char code[] = "a=1;\n"
   //               "b=2;\n"
   //               "a=3;\n"
   //               "print(1,2+1,a);\n";
 
-  char code[] = "a = 5+(3==2);\n"
+  char code[] = "a = 5+(3==3);\n"
                 "b = 10*a;\n"
                 "print(b);\n";
 
@@ -34,14 +34,14 @@ int main(void) {
   parse_init(code);
 
   printf("parse program\n");
-  stm = parse();
+  prog = parse();
 
   printf("display program\n");
-  display_stm(stm);
+  display_stm(prog);
 
   printf("interp program\n");
   // the evaluation function
-  interp(stm);
+  interp(prog);
 
   return 0;
 }

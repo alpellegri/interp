@@ -63,23 +63,20 @@ typedef enum {
   A_gt
 } A_binop;
 
-typedef struct A_stm_s *A_stm_p;
+typedef struct A_prog_s *A_prog_p;
 typedef struct A_exp_s *A_exp_p;
 typedef struct A_expList_s *A_expList_p;
 
 /*
- * Stm -> Stm; Stm       (CompoundStm)
- * Stm -> Stm; epsilon   (CompoundStm)
+ * Stm -> Stm; epsilon
  * Stm -> id := Exp      (AssignStm)
  * Stm -> print(ExpList) (PrintStm)
  * Stm -> if(Exp)        (IfStm)
  */
-struct A_stm_s {
-  enum { A_compoundStm, A_assignStm, A_printStm, A_ifStm } kind;
+struct A_prog_s {
+  enum { A_progStm, A_assignStm, A_printStm, A_ifStm } kind;
   union {
-    struct {
-      A_stm_p stm1, stm2;
-    } compound;
+    A_prog_p prog;
     struct {
       string id;
       A_exp_p exp;
@@ -91,19 +88,19 @@ struct A_stm_s {
       A_exp_p exp;
     } if_kw;
   } u;
-} A_stm_t;
-extern A_stm_p A_CompoundStm(A_stm_p stm1, A_stm_p stm2);
-extern A_stm_p A_AssignStm(string id, A_exp_p exp);
-extern A_stm_p A_PrintStm(A_expList_p exps);
+  A_prog_p tail;
+} A_prog_t;
+extern A_prog_p A_ProgStm(A_prog_p head, A_prog_p tail);
+extern A_prog_p A_AssignStm(string id, A_exp_p exp);
+extern A_prog_p A_PrintStm(A_expList_p exps);
 
 /*
  * Exp -> id             (IdExp)
  * Exp -> num           (NumExp)
  * Exp -> Exp Binop Exp  (OpExp)
- * Exp -> (Stm, Exp)   (EseqExp)
  */
 struct A_exp_s {
-  enum { A_idExp, A_numExp, A_opExp, A_eseqExp } kind;
+  enum { A_idExp, A_numExp, A_opExp } kind;
   union {
     string id;
     int num;
@@ -112,16 +109,11 @@ struct A_exp_s {
       A_binop oper;
       A_exp_p right;
     } op;
-    struct {
-      A_stm_p stm;
-      A_exp_p exp;
-    } eseq;
   } u;
 } A_exp_t;
 extern A_exp_p A_IdExp(string id);
 extern A_exp_p A_NumExp(int num);
 extern A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right);
-extern A_exp_p A_EseqExp(A_stm_p stm, A_exp_p exp);
 
 /*
  * ExpList -> Exp, ExpList  (PairExpList)
@@ -134,7 +126,7 @@ struct A_expList_s {
 } A_expList_t;
 extern A_expList_p A_PairExpList(A_exp_p head, A_expList_p tail);
 
-extern void display_stm(A_stm_p stm);
+extern void display_stm(A_prog_p stm);
 extern void display_exp(A_exp_p exp);
 extern void display_expList(A_expList_p expList);
 
