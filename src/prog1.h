@@ -7,12 +7,11 @@
 extern "C" {
 #endif
 
-A_stm prog(void);
-A_stm prog_test1(void);
-A_stm prog_test2(void);
-A_stm prog_test3(void);
-A_stm prog_test4(void);
-A_stm *prog_test5(void);
+A_stm_t prog(void);
+A_stm_t prog_test1(void);
+A_stm_t prog_test2(void);
+A_stm_t prog_test3(void);
+A_stm_t prog_test4(void);
 
 #ifdef __cplusplus
 }

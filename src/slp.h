@@ -15,11 +15,11 @@
  * If there is more than one nontrivial (value-carrying) symbol in the
  * right-hand side of a rule (example: the rule CompoundStm), the union will
  * have a component that is itself a struct comprising these values (example:
- * the compound element of the A_stm_ union).
+ * the compound element of the A_stm_s union).
  *
  * If there is only one nontrivial symbol in the right-hand side of a rule, the
  * union will have a component that is the value (example: the num field of the
- * A_exp union).
+ * A_exp_t union).
  *
  * For each variant (CompoundStm, AssignStm, etc.) we make a constructor
  * function to malloc and initialize the data structure.  For each grammar
@@ -63,34 +63,38 @@ typedef enum {
   A_gt
 } A_binop;
 
-typedef struct A_stm_ *A_stm;
-typedef struct A_exp_ *A_exp;
-typedef struct A_expList_ *A_expList;
+typedef struct A_stm_s *A_stm_t;
+typedef struct A_exp_s *A_exp_t;
+typedef struct A_expList_s *A_expList_t;
 
 /*
  * Stm -> Stm; Stm       (CompoundStm)
  * Stm -> Stm; epsilon   (CompoundStm)
  * Stm -> id := Exp      (AssignStm)
  * Stm -> print(ExpList) (PrintStm)
+ * Stm -> if(Exp)        (IfStm)
  */
-struct A_stm_ {
-  enum { A_compoundStm, A_assignStm, A_printStm } kind;
+struct A_stm_s {
+  enum { A_compoundStm, A_assignStm, A_printStm, A_ifStm } kind;
   union {
     struct {
-      A_stm stm1, stm2;
+      A_stm_t stm1, stm2;
     } compound;
     struct {
       string id;
-      A_exp exp;
+      A_exp_t exp;
     } assign;
     struct {
-      A_expList exps;
+      A_expList_t exps;
     } print;
+    struct {
+      A_exp_t exp;
+    } if_kw;
   } u;
 };
-extern A_stm A_CompoundStm(A_stm stm1, A_stm stm2);
-extern A_stm A_AssignStm(string id, A_exp exp);
-extern A_stm A_PrintStm(A_expList exps);
+extern A_stm_t A_CompoundStm(A_stm_t stm1, A_stm_t stm2);
+extern A_stm_t A_AssignStm(string id, A_exp_t exp);
+extern A_stm_t A_PrintStm(A_expList_t exps);
 
 /*
  * Exp -> id             (IdExp)
@@ -98,41 +102,41 @@ extern A_stm A_PrintStm(A_expList exps);
  * Exp -> Exp Binop Exp  (OpExp)
  * Exp -> (Stm, Exp)   (EseqExp)
  */
-struct A_exp_ {
+struct A_exp_s {
   enum { A_idExp, A_numExp, A_opExp, A_eseqExp } kind;
   union {
     string id;
     int num;
     struct {
-      A_exp left;
+      A_exp_t left;
       A_binop oper;
-      A_exp right;
+      A_exp_t right;
     } op;
     struct {
-      A_stm stm;
-      A_exp exp;
+      A_stm_t stm;
+      A_exp_t exp;
     } eseq;
   } u;
 };
-extern A_exp A_IdExp(string id);
-extern A_exp A_NumExp(int num);
-extern A_exp A_OpExp(A_exp left, A_binop oper, A_exp right);
-extern A_exp A_EseqExp(A_stm stm, A_exp exp);
+extern A_exp_t A_IdExp(string id);
+extern A_exp_t A_NumExp(int num);
+extern A_exp_t A_OpExp(A_exp_t left, A_binop oper, A_exp_t right);
+extern A_exp_t A_EseqExp(A_stm_t stm, A_exp_t exp);
 
 /*
  * ExpList -> Exp, ExpList  (PairExpList)
  * ExpList -> Exp  epsilon  (PairExpList)
  */
-struct A_expList_ {
+struct A_expList_s {
   enum { A_pairExpList } kind;
-  A_exp head;
-  A_expList tail;
+  A_exp_t head;
+  A_expList_t tail;
 };
-extern A_expList A_PairExpList(A_exp head, A_expList tail);
+extern A_expList_t A_PairExpList(A_exp_t head, A_expList_t tail);
 
-extern void display_stm(A_stm stm);
-extern void display_exp(A_exp exp);
-extern void display_expList(A_expList expList);
+extern void display_stm(A_stm_t stm);
+extern void display_exp(A_exp_t exp);
+extern void display_expList(A_expList_t expList);
 
 #ifdef __cplusplus
 }

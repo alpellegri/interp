@@ -6,7 +6,7 @@
 #include "parser.h"
 
 int main(void) {
-  A_stm stm;
+  A_stm_t stm;
 
   // char code[] = "a=1;\n"
   //               "b=2;\n"

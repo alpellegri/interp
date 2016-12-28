@@ -10,7 +10,7 @@
  * b := (print(a, a-1), 10*a);
  * print(b);
  */
-A_stm prog(void) {
+A_stm_t prog(void) {
 
   return A_CompoundStm(
       A_AssignStm("a", A_OpExp(A_NumExp(5), A_add, A_NumExp(3))),
@@ -29,13 +29,13 @@ A_stm prog(void) {
  * a := 5;
  * print(a);
  */
-A_stm _prog_test1(void) {
+A_stm_t _prog_test1(void) {
 
   return A_CompoundStm(A_AssignStm("a", A_NumExp(5)),
                        A_PrintStm(A_PairExpList(A_IdExp("a"), 0)));
 }
 
-A_stm prog_test1(void) {
+A_stm_t prog_test1(void) {
 
   return A_CompoundStm(
       A_AssignStm("a", A_NumExp(5)),
@@ -46,7 +46,7 @@ A_stm prog_test1(void) {
  * a := 5;
  * print(a, a);
  */
-A_stm prog_test2(void) {
+A_stm_t prog_test2(void) {
 
   return A_CompoundStm(
       A_AssignStm("a", A_NumExp(5)),
@@ -60,7 +60,7 @@ A_stm prog_test2(void) {
  * b = (print(a, (print(a, a, 100, 200, 300), 100), a-1), 10*a);
  * print(b);
  */
-A_stm _prog_test3(void) {
+A_stm_t _prog_test3(void) {
 
   return A_CompoundStm(
       A_AssignStm("a", A_OpExp(A_NumExp(5), A_add, A_NumExp(3))),
@@ -94,7 +94,7 @@ A_stm _prog_test3(void) {
  * b = 10*a;
  * print(b);
  */
-A_stm prog_test3(void) {
+A_stm_t prog_test3(void) {
 
   return A_CompoundStm(
       A_AssignStm("a", A_OpExp(A_NumExp(5), A_add, A_NumExp(3))),

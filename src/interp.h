@@ -35,16 +35,16 @@ extern IntAndTable_ IntAndTable(int i, Table_ t);
 /*
  * "Interpret" a program in this language.
  */
-extern void interp(A_stm stm);
-extern void interp_context(A_stm stm);
-extern void interp_multi(A_stm *stm);
+extern void interp(A_stm_t stm);
+extern void interp_context(A_stm_t stm);
+extern void interp_multi(A_stm_t *stm);
 
 /*
  * Produce a new table from the specified table.  The new table is just like
  * the original one except that some identifiers map to different integers as
  * a result of the given statement.
  */
-extern Table_ interpStm(A_stm s, Table_ t);
+extern Table_ interpStm(A_stm_t s, Table_ t);
 
 /*
  * The result of interpreting an expression e1 with table t1 is an integer
@@ -52,8 +52,8 @@ extern Table_ interpStm(A_stm s, Table_ t);
  * subexpressions (such as an OpExp), the table t2 resulting from the first
  * subexpression can be used in processing the second subexpression.
  */
-extern IntAndTable_ interpExp(A_exp e, Table_ t);
-extern IntAndTable_ interpExpList(A_expList expList, Table_ t);
+extern IntAndTable_ interpExp(A_exp_t e, Table_ t);
+extern IntAndTable_ interpExpList(A_expList_t expList, Table_ t);
 
 /*
  * Put a new element at the head of the linked list.

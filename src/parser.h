@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 extern void parse_init(char *ptr);
-extern A_stm parse(void);
+extern A_stm_t parse(void);
 
 #ifdef __cplusplus
 }

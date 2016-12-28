@@ -7,7 +7,7 @@
 
 int main() {
 
-  A_stm stm;
+  A_stm_t stm;
 
   printf("prog():\n");
   // stm = prog_test2();

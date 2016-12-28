@@ -1,6 +1,6 @@
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
 #include "interp.h"
 #include "slp.h"
@@ -82,7 +82,7 @@ Table_ update(Table_ t, string id, int value) {
   return t;
 }
 
-IntAndTable_ interpExp(A_exp e, Table_ t) {
+IntAndTable_ interpExp(A_exp_t e, Table_ t) {
 
   switch (e->kind) {
   case A_idExp:
@@ -132,7 +132,7 @@ IntAndTable_ interpExp(A_exp e, Table_ t) {
       break;
     default:
       /* This should not happen! */
-      assert(!"Wrong value for A_exp->u.op.oper!");
+      assert(!"Wrong value for A_exp_t->u.op.oper!");
     }
     // printf("A_opExp lvalue: %d, rvalue: %d\n", lval, rval);
     return IntAndTable(value, it_tmp->t);
@@ -142,11 +142,11 @@ IntAndTable_ interpExp(A_exp e, Table_ t) {
     return interpExp(e->u.eseq.exp, t);
   default:
     /* This should not happen! */
-    assert(!"Wrong kind-value for A_exp!");
+    assert(!"Wrong kind-value for A_exp_t!");
   }
 }
 
-IntAndTable_ interpExpList(A_expList expList, Table_ t) {
+IntAndTable_ interpExpList(A_expList_t expList, Table_ t) {
   IntAndTable_ it;
 
   switch (expList->kind) {
@@ -160,11 +160,11 @@ IntAndTable_ interpExpList(A_expList expList, Table_ t) {
     }
   default:
     /* This should not happen! */
-    assert(!"Wrong kind-value for A_expList->kind.");
+    assert(!"Wrong kind-value for A_expList_t->kind.");
   }
 }
 
-Table_ interpStm(A_stm s, Table_ t) {
+Table_ interpStm(A_stm_t s, Table_ t) {
   IntAndTable_ it;
 
   switch (s->kind) {
@@ -184,15 +184,18 @@ Table_ interpStm(A_stm s, Table_ t) {
     it = interpExpList(s->u.print.exps, t);
     printf("A_printStm %d\n", it->i);
     return it->t;
+  case A_ifStm:
+    it = interpExp(s->u.if_kw.exp, t);
+    return it->t;
   default:
     /* This should not happen! */
-    assert(!"Wrong kind-value for A_stm!");
+    assert(!"Wrong kind-value for A_stm_t!");
   }
 
   return t;
 }
 
-void interp(A_stm stm) { interpStm(stm, NULL); }
+void interp(A_stm_t stm) { interpStm(stm, NULL); }
 
 Table_ ctx = NULL;
-void interp_context(A_stm stm) { ctx = interpStm(stm, ctx); }
+void interp_context(A_stm_t stm) { ctx = interpStm(stm, ctx); }
