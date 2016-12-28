@@ -7,9 +7,9 @@
 #include "token.h"
 #include "util.h"
 
-A_stm_t parseStm(void);
-A_exp_t parseExp(void);
-A_expList_t parseExpList(void);
+A_stm_p parseStm(void);
+A_exp_p parseExp(void);
+A_expList_p parseExpList(void);
 
 char *parse_varname() {
   token_t tok;
@@ -22,8 +22,8 @@ char *parse_varname() {
   return _strdup(tok.value);
 }
 
-A_exp_t parse_atom(void) {
-  A_exp_t exp;
+A_exp_p parse_atom(void) {
+  A_exp_p exp;
   token_t tok;
 
   token_peek(&tok);
@@ -48,8 +48,8 @@ A_exp_t parse_atom(void) {
   return NULL;
 }
 
-A_exp_t maybeBinary(A_exp_t left, int prec) {
-  A_exp_t right;
+A_exp_p maybeBinary(A_exp_p left, int prec) {
+  A_exp_p right;
   token_t tok;
   token_peek(&tok);
   printf("maybeBinary: token_peek %s\n", tok.value);
@@ -87,15 +87,15 @@ A_exp_t maybeBinary(A_exp_t left, int prec) {
   return left;
 }
 
-A_exp_t parseExp(void) {
+A_exp_p parseExp(void) {
   token_t tok;
   token_peek(&tok);
   printf("parseExp: token_peek %s\n", tok.value);
   return maybeBinary(parse_atom(), 0);
 }
 
-A_expList_t parseExpList(void) {
-  A_expList_t explist;
+A_expList_p parseExpList(void) {
+  A_expList_p explist;
   token_t tok;
 
   token_peek(&tok);
@@ -114,9 +114,9 @@ A_expList_t parseExpList(void) {
   return NULL;
 }
 
-A_stm_t parseStm(void) {
+A_stm_p parseStm(void) {
   token_t tok;
-  A_stm_t stm;
+  A_stm_p stm;
 
   token_peek(&tok);
   printf("parseStm: token_peek %s\n", tok.value);
@@ -142,11 +142,11 @@ A_stm_t parseStm(void) {
 
 void parse_init(char *ptr) { token_init(ptr); };
 
-A_stm_t parse(void) {
+A_stm_p parse(void) {
   int i = 0;
   token_t tok;
-  A_stm_t code;
-  A_stm_t stm = NULL;
+  A_stm_p code;
+  A_stm_p stm = NULL;
 
   token_peek(&tok);
   printf("[%d]\n", i++);

@@ -19,7 +19,7 @@
  *
  * If there is only one nontrivial symbol in the right-hand side of a rule, the
  * union will have a component that is the value (example: the num field of the
- * A_exp_t union).
+ * A_exp_p union).
  *
  * For each variant (CompoundStm, AssignStm, etc.) we make a constructor
  * function to malloc and initialize the data structure.  For each grammar
@@ -63,9 +63,9 @@ typedef enum {
   A_gt
 } A_binop;
 
-typedef struct A_stm_s *A_stm_t;
-typedef struct A_exp_s *A_exp_t;
-typedef struct A_expList_s *A_expList_t;
+typedef struct A_stm_s *A_stm_p;
+typedef struct A_exp_s *A_exp_p;
+typedef struct A_expList_s *A_expList_p;
 
 /*
  * Stm -> Stm; Stm       (CompoundStm)
@@ -78,23 +78,23 @@ struct A_stm_s {
   enum { A_compoundStm, A_assignStm, A_printStm, A_ifStm } kind;
   union {
     struct {
-      A_stm_t stm1, stm2;
+      A_stm_p stm1, stm2;
     } compound;
     struct {
       string id;
-      A_exp_t exp;
+      A_exp_p exp;
     } assign;
     struct {
-      A_expList_t exps;
+      A_expList_p exps;
     } print;
     struct {
-      A_exp_t exp;
+      A_exp_p exp;
     } if_kw;
   } u;
-};
-extern A_stm_t A_CompoundStm(A_stm_t stm1, A_stm_t stm2);
-extern A_stm_t A_AssignStm(string id, A_exp_t exp);
-extern A_stm_t A_PrintStm(A_expList_t exps);
+} A_stm_t;
+extern A_stm_p A_CompoundStm(A_stm_p stm1, A_stm_p stm2);
+extern A_stm_p A_AssignStm(string id, A_exp_p exp);
+extern A_stm_p A_PrintStm(A_expList_p exps);
 
 /*
  * Exp -> id             (IdExp)
@@ -108,20 +108,20 @@ struct A_exp_s {
     string id;
     int num;
     struct {
-      A_exp_t left;
+      A_exp_p left;
       A_binop oper;
-      A_exp_t right;
+      A_exp_p right;
     } op;
     struct {
-      A_stm_t stm;
-      A_exp_t exp;
+      A_stm_p stm;
+      A_exp_p exp;
     } eseq;
   } u;
-};
-extern A_exp_t A_IdExp(string id);
-extern A_exp_t A_NumExp(int num);
-extern A_exp_t A_OpExp(A_exp_t left, A_binop oper, A_exp_t right);
-extern A_exp_t A_EseqExp(A_stm_t stm, A_exp_t exp);
+} A_exp_t;
+extern A_exp_p A_IdExp(string id);
+extern A_exp_p A_NumExp(int num);
+extern A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right);
+extern A_exp_p A_EseqExp(A_stm_p stm, A_exp_p exp);
 
 /*
  * ExpList -> Exp, ExpList  (PairExpList)
@@ -129,14 +129,14 @@ extern A_exp_t A_EseqExp(A_stm_t stm, A_exp_t exp);
  */
 struct A_expList_s {
   enum { A_pairExpList } kind;
-  A_exp_t head;
-  A_expList_t tail;
-};
-extern A_expList_t A_PairExpList(A_exp_t head, A_expList_t tail);
+  A_exp_p head;
+  A_expList_p tail;
+} A_expList_t;
+extern A_expList_p A_PairExpList(A_exp_p head, A_expList_p tail);
 
-extern void display_stm(A_stm_t stm);
-extern void display_exp(A_exp_t exp);
-extern void display_expList(A_expList_t expList);
+extern void display_stm(A_stm_p stm);
+extern void display_exp(A_exp_p exp);
+extern void display_expList(A_expList_p expList);
 
 #ifdef __cplusplus
 }

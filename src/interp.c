@@ -82,7 +82,7 @@ Table_ update(Table_ t, string id, int value) {
   return t;
 }
 
-IntAndTable_ interpExp(A_exp_t e, Table_ t) {
+IntAndTable_ interpExp(A_exp_p e, Table_ t) {
 
   switch (e->kind) {
   case A_idExp:
@@ -132,7 +132,7 @@ IntAndTable_ interpExp(A_exp_t e, Table_ t) {
       break;
     default:
       /* This should not happen! */
-      assert(!"Wrong value for A_exp_t->u.op.oper!");
+      assert(!"Wrong value for A_exp_p->u.op.oper!");
     }
     // printf("A_opExp lvalue: %d, rvalue: %d\n", lval, rval);
     return IntAndTable(value, it_tmp->t);
@@ -142,11 +142,11 @@ IntAndTable_ interpExp(A_exp_t e, Table_ t) {
     return interpExp(e->u.eseq.exp, t);
   default:
     /* This should not happen! */
-    assert(!"Wrong kind-value for A_exp_t!");
+    assert(!"Wrong kind-value for A_exp_p!");
   }
 }
 
-IntAndTable_ interpExpList(A_expList_t expList, Table_ t) {
+IntAndTable_ interpExpList(A_expList_p expList, Table_ t) {
   IntAndTable_ it;
 
   switch (expList->kind) {
@@ -160,11 +160,11 @@ IntAndTable_ interpExpList(A_expList_t expList, Table_ t) {
     }
   default:
     /* This should not happen! */
-    assert(!"Wrong kind-value for A_expList_t->kind.");
+    assert(!"Wrong kind-value for A_expList_p->kind.");
   }
 }
 
-Table_ interpStm(A_stm_t s, Table_ t) {
+Table_ interpStm(A_stm_p s, Table_ t) {
   IntAndTable_ it;
 
   switch (s->kind) {
@@ -189,13 +189,13 @@ Table_ interpStm(A_stm_t s, Table_ t) {
     return it->t;
   default:
     /* This should not happen! */
-    assert(!"Wrong kind-value for A_stm_t!");
+    assert(!"Wrong kind-value for A_stm_p!");
   }
 
   return t;
 }
 
-void interp(A_stm_t stm) { interpStm(stm, NULL); }
+void interp(A_stm_p stm) { interpStm(stm, NULL); }
 
 Table_ ctx = NULL;
-void interp_context(A_stm_t stm) { ctx = interpStm(stm, ctx); }
+void interp_context(A_stm_p stm) { ctx = interpStm(stm, ctx); }
