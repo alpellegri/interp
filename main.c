@@ -36,21 +36,21 @@ int main(void) {
   //               "a = a+1;\n"
   //               "print(a);\n";
 
-  // char code[] = "a = 1;\n"
-  //               "if (a > 2) {\n"
-  //               "  print(1);\n"
-  //               "} else {\n"
-  //               "  print(2);\n"
-  //               "};\n";
-
   char code[] = "a = 1;\n"
-                "if (a < 2) {\n"
+                "if (a > 2) {\n"
                 "  print(1);\n"
-                "  print(3);\n"
                 "} else {\n"
                 "  print(2);\n"
-                "  print(4);\n"
                 "};\n";
+
+  // char code[] = "a = 1;\n"
+  //               "if (a < 2) {\n"
+  //               "  print(1);\n"
+  //               "  print(3);\n"
+  //               "} else {\n"
+  //               "  print(2);\n"
+  //               "  print(4);\n"
+  //               "};\n";
 
   printf("*\n");
   printf("load program\n");

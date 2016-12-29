@@ -161,21 +161,22 @@ A_prog_p parseStm(void) {
   return NULL;
 }
 
+#if 0
 A_prog_p parseProg(void) {
   int i = 0;
   int run = 1;
   token_t tok;
-  A_prog_p code;
+  A_prog_p head;
   A_prog_p stm = NULL;
 
   token_peek(&tok);
   printf("\nparseProg [%d]\n", i++);
-  code = parseStm();
-    token_skip_punc(";");
-  stm = code;
+  head = parseStm();
+  token_skip_punc(";");
+  stm = head;
   if (token_eof() == 1) {
-      run = 0;
-    }
+    run = 0;
+  }
   while (run == 1) {
     printf("\nparseProg [%d]\n", i++);
     stm->tail = parseStm();
@@ -191,8 +192,47 @@ A_prog_p parseProg(void) {
     stm = stm->tail;
   }
 
-  return code;
+  return head;
 }
+#else
+A_prog_p parseProg(void) {
+  int i = 0;
+  int run = 1;
+  token_t tok;
+  A_prog_p head;
+  A_prog_p stm = NULL;
+
+  token_peek(&tok);
+  printf("\nparseProg [%d]\n", i++);
+  head = parseStm();
+  token_skip_punc(";");
+  stm = head;
+  if (token_is_punc("}") == 1) {
+    printf("parseProg } found\n");
+    run = 0;
+  }
+  if (token_eof() == 1) {
+    run = 0;
+  }
+
+  while (run == 1) {
+    printf("\nparseProg [%d]\n", i++);
+    stm->tail = parseStm();
+    token_skip_punc(";");
+
+    if (token_is_punc("}") == 1) {
+      printf("parseProg } found\n");
+      run = 0;
+    }
+    if (token_eof() == 1) {
+      run = 0;
+    }
+    stm = stm->tail;
+  }
+
+  return head;
+}
+#endif
 
 void parse_init(char *ptr) {
   /* init token */
