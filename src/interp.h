@@ -35,12 +35,13 @@ extern IntAndTable_p IntAndTable(int i, Table_ t);
 /*
  * "Interpret" a program in this language.
  */
-extern void interp(A_prog_p stm);
-extern void interp_context(A_prog_p stm);
+extern void interper(A_prog_p stm);
+extern Table_ interp(A_prog_p stm, Table_ ctx);
 
 /*
  * Produce a new table from the specified table.  The new table is just like
- * the original one except that some identifiers map to different integers as
+ * the original one except that some identifiers map to different integers
+ * as
  * a result of the given statement.
  */
 extern Table_ interpStm(A_prog_p s, Table_ t);

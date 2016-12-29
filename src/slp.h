@@ -25,15 +25,13 @@ typedef struct A_exp_s *A_exp_p;
 typedef struct A_expList_s *A_expList_p;
 
 /*
- * Stm -> Stm; epsilon
  * Stm -> id := Exp      (AssignStm)
  * Stm -> print(ExpList) (PrintStm)
  * Stm -> if(Exp)        (IfStm)
  */
 struct A_prog_s {
-  enum { A_progStm, A_assignStm, A_printStm, A_ifStm } kind;
+  enum { A_assignStm, A_printStm, A_ifStm } kind;
   union {
-    A_prog_p prog;
     struct {
       string id;
       A_exp_p exp;
@@ -49,7 +47,6 @@ struct A_prog_s {
   } u;
   A_prog_p tail;
 } A_prog_t;
-extern A_prog_p A_ProgStm(A_prog_p head, A_prog_p tail);
 extern A_prog_p A_AssignStm(string id, A_exp_p exp);
 extern A_prog_p A_PrintStm(A_expList_p exps);
 extern A_prog_p A_IfStm(A_exp_p cond, A_prog_p then, A_prog_p otherwise);

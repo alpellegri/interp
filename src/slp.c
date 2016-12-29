@@ -26,20 +26,21 @@ void display_expList(A_expList_p expList) {
 char *A_exp_decriptor[4] = {
     "A_idExp", "A_numExp", "A_opExp", "A_eseqExp",
 };
-// enum { A_plus, A_minus, A_times, A_div } A_binop;
-char *A_binop_decriptor[4] = {
-    "+", "-", "*", "/",
+// enum { A_add, A_sub, A_mul, A_div, A_eq, A_ne, A_le, A_lt, A_ge, A_gt }
+// A_binop;
+char *A_binop_decriptor[10] = {
+    "+", "-", "*", "/", "==", "!=", "<=", "<", ">=", ">",
 };
 
 void display_exp(A_exp_p exp) {
   printf("A_exp: %s\n", A_exp_decriptor[exp->kind]);
   if (exp->kind == A_idExp) {
-    printf(">%s<\n", exp->u.id);
+    printf("_%s_\n", exp->u.id);
   } else if (exp->kind == A_numExp) {
-    printf(">%d<\n", exp->u.num);
+    printf("_%d_\n", exp->u.num);
   } else if (exp->kind == A_opExp) {
     display_exp(exp->u.op.left);
-    printf(">%s<\n", A_binop_decriptor[exp->u.op.oper]);
+    printf("_%s_\n", A_binop_decriptor[exp->u.op.oper]);
     display_exp(exp->u.op.right);
   } else {
     printf("A_exp error %s\n", A_exp_decriptor[exp->kind]);
@@ -47,16 +48,14 @@ void display_exp(A_exp_p exp) {
 }
 
 // struct A_stm_ {
-//   enum { A_progStm, A_assignStm, A_printStm, A_ifStm } kind;
-char *A_stm_decriptor[4] = {
-    "A_progStm", "A_assignStm", "A_printStm", "A_ifStm",
+//   enum { A_assignStm, A_printStm, A_ifStm } kind;
+char *A_stm_decriptor[3] = {
+    "A_assignStm", "A_printStm", "A_ifStm",
 };
 
 void display_stm(A_prog_p stm) {
   printf("A_progStm: %s\n", A_stm_decriptor[stm->kind]);
-  if (stm->kind == A_progStm) {
-    display_stm(stm->u.prog);
-  } else if (stm->kind == A_assignStm) {
+  if (stm->kind == A_assignStm) {
     display_exp(stm->u.assign.exp);
   } else if (stm->kind == A_printStm) {
     if (stm->u.print.exps != NULL) {
@@ -87,14 +86,6 @@ void display_stm(A_prog_p stm) {
   }
 }
 
-A_prog_p A_ProgStm(A_prog_p head, A_prog_p tail) {
-  printf("spl create A_ProgStm\n");
-  A_prog_p s = checked_malloc(sizeof *s);
-  s->kind = A_progStm;
-  s->u.prog = head;
-  s->tail = tail;
-  return s;
-}
 
 A_prog_p A_AssignStm(string id, A_exp_p exp) {
   printf("spl create A_AssignStm\n");
@@ -102,6 +93,7 @@ A_prog_p A_AssignStm(string id, A_exp_p exp) {
   s->kind = A_assignStm;
   s->u.assign.id = id;
   s->u.assign.exp = exp;
+  s->tail = NULL;
   return s;
 }
 
@@ -110,6 +102,7 @@ A_prog_p A_PrintStm(A_expList_p exps) {
   A_prog_p s = checked_malloc(sizeof *s);
   s->kind = A_printStm;
   s->u.print.exps = exps;
+  s->tail = NULL;
   return s;
 }
 
@@ -120,6 +113,7 @@ A_prog_p A_IfStm(A_exp_p cond, A_prog_p then, A_prog_p otherwise) {
   s->u.if_kw.cond = cond;
   s->u.if_kw.then = then;
   s->u.if_kw.otherwise = otherwise;
+  s->tail = NULL;
   return s;
 }
 

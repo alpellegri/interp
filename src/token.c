@@ -6,7 +6,7 @@
 #include "token.h"
 #include "util.h"
 
-#if 0
+#if 1
 #define debug_printf(x, y)
 #else
 #define debug_printf(x, y) printf(x, y)

@@ -156,40 +156,40 @@ A_prog_p parseStm(void) {
     return stm;
   }
 
-  printf("error parseStm\n");
+  printf("error parseProg\n");
   _exit(0);
   return NULL;
 }
 
 A_prog_p parseProg(void) {
   int i = 0;
-  int run = 0;
+  int run = 1;
   token_t tok;
   A_prog_p code;
   A_prog_p stm = NULL;
 
   token_peek(&tok);
-  printf("[%d]\n", i++);
-  code = A_ProgStm(NULL, NULL);
-  stm = code;
-  do {
-    printf("[%d]\n", i++);
-    stm->u.prog = parseStm();
+  printf("\nparseProg [%d]\n", i++);
+  code = parseStm();
     token_skip_punc(";");
-    if (token_is_punc("}") != 1) {
-      run = 1;
-    } else {
+  stm = code;
+  if (token_eof() == 1) {
       run = 0;
     }
+  while (run == 1) {
+    printf("\nparseProg [%d]\n", i++);
+    stm->tail = parseStm();
+    token_skip_punc(";");
 
-    if (!token_eof()) {
-      stm->tail = A_ProgStm(NULL, NULL);
-      stm = stm->tail;
-    } else {
+    if (token_is_punc("}") == 1) {
+      printf("parseProg } found\n");
       run = 0;
     }
-    // } while (!token_eof());
-  } while (run == 1);
+    if (token_eof() == 1) {
+      run = 0;
+    }
+    stm = stm->tail;
+  }
 
   return code;
 }

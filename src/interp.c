@@ -165,14 +165,6 @@ Table_ interpStm(A_prog_p s, Table_ t) {
   IntAndTable_p it;
 
   switch (s->kind) {
-  case A_progStm:
-    t = interpStm(s->u.prog, t);
-    if (s->tail) {
-      t = interpStm(s->tail, t);
-    } else {
-      printf("\ninterpStm end\n");
-    }
-    return t;
   case A_assignStm:
     it = interpExp(s->u.assign.exp, t);
     t = update(it->t, s->u.assign.id, it->i);
@@ -184,10 +176,10 @@ Table_ interpStm(A_prog_p s, Table_ t) {
   case A_ifStm:
     it = interpExp(s->u.if_kw.cond, t);
     if (it->i != 0) {
-      t = interpStm(s->u.if_kw.then, t);
+      t = interp(s->u.if_kw.then, t);
     } else {
       if (s->u.if_kw.otherwise != NULL) {
-        t = interpStm(s->u.if_kw.otherwise, t);
+        t = interp(s->u.if_kw.otherwise, t);
       }
     }
     return it->t;
@@ -199,7 +191,18 @@ Table_ interpStm(A_prog_p s, Table_ t) {
   return t;
 }
 
-void interp(A_prog_p stm) { interpStm(stm, NULL); }
+void interper(A_prog_p stm) {
 
 Table_ ctx = NULL;
-void interp_context(A_prog_p stm) { ctx = interpStm(stm, ctx); }
+  while (stm != NULL) {
+    ctx = interpStm(stm, ctx);
+    stm = stm->tail;
+  }
+}
+Table_ interp(A_prog_p stm, Table_ ctx) {
+  while (stm != NULL) {
+    ctx = interpStm(stm, ctx);
+    stm = stm->tail;
+  }
+  return ctx;
+}
