@@ -8,16 +8,16 @@
 char *A_expList_decriptor[1] = {"A_pairExpList"};
 
 void display_expList(A_expList_p expList) {
-  printf("expList: %s\n", A_expList_decriptor[expList->kind]);
+  printf("A_expList: %s\n", A_expList_decriptor[expList->kind]);
   if (expList->kind == A_pairExpList) {
     display_exp(expList->head);
     if (expList->tail != NULL) {
       display_expList(expList->tail);
     } else {
-      printf("expList: null tail\n");
+      printf("A_expList: end tail\n");
     }
   } else {
-    printf("error %s\n", A_expList_decriptor[expList->kind]);
+    printf("A_expList error %s\n", A_expList_decriptor[expList->kind]);
   }
 }
 
@@ -32,28 +32,28 @@ char *A_binop_decriptor[4] = {
 };
 
 void display_exp(A_exp_p exp) {
-  printf("exp: %s\n", A_exp_decriptor[exp->kind]);
+  printf("A_exp: %s\n", A_exp_decriptor[exp->kind]);
   if (exp->kind == A_idExp) {
-    printf(">%s_\n", exp->u.id);
+    printf(">%s<\n", exp->u.id);
   } else if (exp->kind == A_numExp) {
-    printf(">%d_\n", exp->u.num);
+    printf(">%d<\n", exp->u.num);
   } else if (exp->kind == A_opExp) {
     display_exp(exp->u.op.left);
-    printf(">%s_\n", A_binop_decriptor[exp->u.op.oper]);
+    printf(">%s<\n", A_binop_decriptor[exp->u.op.oper]);
     display_exp(exp->u.op.right);
   } else {
-    printf("error %s\n", A_exp_decriptor[exp->kind]);
+    printf("A_exp error %s\n", A_exp_decriptor[exp->kind]);
   }
 }
 
 // struct A_stm_ {
-//   enum { A_compoundStm, A_assignStm, A_printStm, A_ifStm } kind;
+//   enum { A_progStm, A_assignStm, A_printStm, A_ifStm } kind;
 char *A_stm_decriptor[4] = {
     "A_progStm", "A_assignStm", "A_printStm", "A_ifStm",
 };
 
 void display_stm(A_prog_p stm) {
-  printf("stm: %s\n", A_stm_decriptor[stm->kind]);
+  printf("A_progStm: %s\n", A_stm_decriptor[stm->kind]);
   if (stm->kind == A_progStm) {
     display_stm(stm->u.prog);
   } else if (stm->kind == A_assignStm) {
@@ -66,27 +66,29 @@ void display_stm(A_prog_p stm) {
     if (stm->u.if_kw.cond != NULL) {
       display_exp(stm->u.if_kw.cond);
     } else {
-      printf("error if_kw %s\n", A_stm_decriptor[stm->kind]);
+      printf("A_progStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
     }
     if (stm->u.if_kw.then != NULL) {
       display_stm(stm->u.if_kw.then);
     } else {
-      printf("error if_kw %s\n", A_stm_decriptor[stm->kind]);
+      printf("A_progStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
     }
     if (stm->u.if_kw.otherwise != NULL) {
       display_stm(stm->u.if_kw.otherwise);
     }
   } else {
-    printf("error %s\n", A_stm_decriptor[stm->kind]);
+    printf("A_progStm error %s\n", A_stm_decriptor[stm->kind]);
   }
 
   if (stm->tail != NULL) {
     display_stm(stm->tail);
+  } else {
+    printf("A_progStm: end of A_progStm\n");
   }
 }
 
 A_prog_p A_ProgStm(A_prog_p head, A_prog_p tail) {
-  printf("spl create A_CompoundStm\n");
+  printf("spl create A_ProgStm\n");
   A_prog_p s = checked_malloc(sizeof *s);
   s->kind = A_progStm;
   s->u.prog = head;
