@@ -130,8 +130,27 @@ A_prog_p parseStm(void) {
     token_skip_punc("(");
     stm = A_PrintStm(parseExpList());
     token_skip_punc(")");
+  } else if (token_is_kw("if") == 1) {
+    A_exp_p cond;
+    A_prog_p then;
+    A_prog_p otherwise = NULL;
+    token_skip_kw("if");
+    token_skip_punc("(");
+    cond = parseExp();
+    token_skip_punc(")");
+    token_skip_punc("{");
+    then = parseStm();
+    token_skip_punc("}");
+    if (token_is_kw("else") == 1) {
+      token_skip_kw("else");
+      token_skip_punc("{");
+      otherwise = parseStm();
+      token_skip_punc("}");
+    }
+    stm = A_IfStm(cond, then, otherwise);
   }
   if (token_is_punc(";")) {
+    token_skip_punc(";");
     return stm;
   }
 
@@ -159,7 +178,7 @@ A_prog_p parse(void) {
     printf("[%d]\n", i++);
     printf("token_skip_punc\n");
     stm->u.prog = parseStm();
-    token_skip_punc(";");
+    // token_skip_punc(";");
     if (!token_eof()) {
       stm->tail = A_ProgStm(NULL, NULL);
       stm = stm->tail;

@@ -63,10 +63,18 @@ void display_stm(A_prog_p stm) {
       display_expList(stm->u.print.exps);
     }
   } else if (stm->kind == A_ifStm) {
-    if (stm->u.if_kw.exp != NULL) {
-      display_exp(stm->u.if_kw.exp);
+    if (stm->u.if_kw.cond != NULL) {
+      display_exp(stm->u.if_kw.cond);
     } else {
       printf("error if_kw %s\n", A_stm_decriptor[stm->kind]);
+    }
+    if (stm->u.if_kw.then != NULL) {
+      display_stm(stm->u.if_kw.then);
+    } else {
+      printf("error if_kw %s\n", A_stm_decriptor[stm->kind]);
+    }
+    if (stm->u.if_kw.otherwise != NULL) {
+      display_stm(stm->u.if_kw.otherwise);
     }
   } else {
     printf("error %s\n", A_stm_decriptor[stm->kind]);
@@ -100,6 +108,16 @@ A_prog_p A_PrintStm(A_expList_p exps) {
   A_prog_p s = checked_malloc(sizeof *s);
   s->kind = A_printStm;
   s->u.print.exps = exps;
+  return s;
+}
+
+A_prog_p A_IfStm(A_exp_p cond, A_prog_p then, A_prog_p otherwise) {
+  printf("spl create A_IfStm\n");
+  A_prog_p s = checked_malloc(sizeof *s);
+  s->kind = A_ifStm;
+  s->u.if_kw.cond = cond;
+  s->u.if_kw.then = then;
+  s->u.if_kw.otherwise = otherwise;
   return s;
 }
 

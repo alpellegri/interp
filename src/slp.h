@@ -1,46 +1,3 @@
-/*
- * Each grammar symbol (Stm, Exp, ExpList, Binop) corresponds to a typedef in
- * the data structures.  Each typedef defines a pointer to a corresponding
- * struct.  The struct name, which ends in an underscore, is never used
- * anywhere except in the declaration of the typedef and the definition of the
- * struct itself.
- *
- * Each struct contains a kind field, which is an enum showing different
- * variants, one for each grammar rule; and a u field, which is a union.  Each
- * grammar rule has right-hand-side components that must be represented in the
- * data structures.  Each grammar symbol's struct contains a union to carry
- * these values, and a kind field to indicate which variant of the union is
- * valid.
- *
- * If there is more than one nontrivial (value-carrying) symbol in the
- * right-hand side of a rule (example: the rule CompoundStm), the union will
- * have a component that is itself a struct comprising these values (example:
- * the compound element of the A_stm_s union).
- *
- * If there is only one nontrivial symbol in the right-hand side of a rule, the
- * union will have a component that is the value (example: the num field of the
- * A_exp_p union).
- *
- * For each variant (CompoundStm, AssignStm, etc.) we make a constructor
- * function to malloc and initialize the data structure.  For each grammar
- * rule, there is one constructor that belongs to the union for its
- * left-hand-side symbol.  This constructor function initializes all fields.
- * The malloc function shall never be called directly, except in these
- * constructor functions.
- *
- * For BinOp, we do not make a Binop struct because this would be overkill:
- * none of the variants would carry any data.  Instead, we make an enum type
- * A_binop.
- *
- * Each module (header file) shall have a prefix unique to that module (example
- * A_ in this file).
- *
- * Typedef names (after the prefix) shall start with lowercase letters;
- * constructor functions (after the prefix) with uppercase; enumeration atoms
- * (after the prefix) with lowercase; and union variants (which have no prefix)
- * with lowercase.
- */
-
 #ifndef SLP_H
 #define SLP_H
 
@@ -85,7 +42,9 @@ struct A_prog_s {
       A_expList_p exps;
     } print;
     struct {
-      A_exp_p exp;
+      A_exp_p cond;
+      A_prog_p then;
+      A_prog_p otherwise;
     } if_kw;
   } u;
   A_prog_p tail;
@@ -93,6 +52,7 @@ struct A_prog_s {
 extern A_prog_p A_ProgStm(A_prog_p head, A_prog_p tail);
 extern A_prog_p A_AssignStm(string id, A_exp_p exp);
 extern A_prog_p A_PrintStm(A_expList_p exps);
+extern A_prog_p A_IfStm(A_exp_p cond, A_prog_p then, A_prog_p otherwise);
 
 /*
  * Exp -> id             (IdExp)

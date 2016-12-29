@@ -170,7 +170,7 @@ Table_ interpStm(A_prog_p s, Table_ t) {
     if (s->tail) {
       t = interpStm(s->tail, t);
     } else {
-      printf("interpStm end\n");
+      printf("\ninterpStm end\n");
     }
     return t;
   case A_assignStm:
@@ -182,7 +182,14 @@ Table_ interpStm(A_prog_p s, Table_ t) {
     printf("%d", it->i);
     return it->t;
   case A_ifStm:
-    it = interpExp(s->u.if_kw.exp, t);
+    it = interpExp(s->u.if_kw.cond, t);
+    if (it->i != 0) {
+      t = interpStm(s->u.if_kw.then, t);
+    } else {
+      if (s->u.if_kw.otherwise != NULL) {
+        t = interpStm(s->u.if_kw.otherwise, t);
+      }
+    }
     return it->t;
   default:
     /* This should not happen! */

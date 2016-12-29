@@ -13,9 +13,9 @@ int main(void) {
   //               "a=3;\n"
   //               "print(1,2+1,a);\n";
 
-  char code[] = "a = 5+(3==3);\n"
-                "b = 10*a;\n"
-                "print(b);\n";
+  // char code[] = "a = 5+(3==3);\n"
+  //               "b = 10*a;\n"
+  //               "print(b);\n";
 
   // char code[] = "a = 1;\n"
   //               "print(a);\n"
@@ -29,6 +29,13 @@ int main(void) {
   //               "print(a);\n"
   //               "a = a+1;\n"
   //               "print(a);\n";
+
+  char code[] = "a = 1;\n"
+                "if (a == 2) {\n"
+                "  print(1);\n"
+                "} else {\n"
+                "  print(2);\n"
+                "};\n";
 
   printf("load program\n");
   parse_init(code);

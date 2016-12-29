@@ -9,12 +9,12 @@ extern "C" {
 #endif
 
 /* store value of variables */
-typedef struct table *Table_;
-struct table {
+typedef struct table_s *Table_;
+typedef struct table_s {
   string id;
   int value;
   Table_ tail;
-};
+} table_t;
 extern Table_ Table(string id, int value, Table_ tail);
 
 /*
