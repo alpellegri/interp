@@ -9,9 +9,15 @@ int main() {
 
   A_stmList_p stmList;
 
-  printf("prog():\n");
-  // stm = prog_test2();
+  printf("\nprog_test1:\n");
   stmList = prog_test1();
+  printf("display_stm:\n");
+  display_stmList(stmList);
+  printf("interp:\n");
+  interper(stmList);
+
+  printf("\nprog_test2:\n");
+  stmList = prog_test2();
   printf("display_stm:\n");
   display_stmList(stmList);
   printf("interp:\n");
