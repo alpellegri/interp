@@ -25,7 +25,7 @@ void *checked_malloc(int len) {
     printf("Ran out of memory!\n");
     exit(1);
   } else {
-    printf("malloc ptr %x, size: %d\n", (unsigned int)p, len);
+    // printf("malloc ptr %x, size: %d\n", (unsigned int)p, len);
   }
   return p;
 }
@@ -35,7 +35,7 @@ void checked_free(void *p) {
     printf("checked_free error\n");
     _exit(1);
   } else {
-    printf("free ptr %x\n", (unsigned int)p);
+    // printf("free ptr %x\n", (unsigned int)p);
     free(p);
   }
 }

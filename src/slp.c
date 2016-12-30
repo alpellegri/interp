@@ -3,21 +3,28 @@
 #include "slp.h"
 #include "util.h"
 
-// struct A_expList_ {
-//   enum { A_pairExpList } kind;
-char *A_expList_decriptor[1] = {"A_pairExpList"};
+// #define DEBUG
+#ifdef DEBUG
+#define debug_printf(fmt, args...) printf(fmt, ##args)
+#else
+#define debug_printf(fmt, args...) /* Don't do anything in release builds */
+#endif
 
-void display_expList(A_expList expList) {
-  printf("expList: %s\n", A_expList_decriptor[expList->kind]);
-  if (expList->kind == A_pairExpList) {
+// struct A_expList_ {
+//   enum { A_expList } kind;
+char *A_expList_decriptor[1] = {"A_expList"};
+
+void display_expList(A_expList_p expList) {
+  printf("A_expList: %s\n", A_expList_decriptor[expList->kind]);
+  if (expList->kind == A_expList) {
     display_exp(expList->head);
     if (expList->tail != NULL) {
       display_expList(expList->tail);
     } else {
-      printf("expList: null tail\n");
+      printf("A_expList: end tail\n");
     }
   } else {
-    printf("error %s\n", A_expList_decriptor[expList->kind]);
+    printf("A_expList error %s\n", A_expList_decriptor[expList->kind]);
   }
 }
 
@@ -26,99 +33,129 @@ void display_expList(A_expList expList) {
 char *A_exp_decriptor[4] = {
     "A_idExp", "A_numExp", "A_opExp", "A_eseqExp",
 };
-// enum { A_plus, A_minus, A_times, A_div } A_binop;
-char *A_binop_decriptor[4] = {
-    "+", "-", "*", "/",
+// enum { A_add, A_sub, A_mul, A_div, A_eq, A_ne, A_le, A_lt, A_ge, A_gt }
+// A_binop;
+char *A_binop_decriptor[10] = {
+    "+", "-", "*", "/", "==", "!=", "<=", "<", ">=", ">",
 };
 
-void display_exp(A_exp exp) {
-  printf("exp: %s\n", A_exp_decriptor[exp->kind]);
+void display_exp(A_exp_p exp) {
+  printf("A_exp: %s\n", A_exp_decriptor[exp->kind]);
   if (exp->kind == A_idExp) {
-    printf(">%s_\n", exp->u.id);
+    printf("_%s_\n", exp->u.id);
   } else if (exp->kind == A_numExp) {
-    printf(">%d_\n", exp->u.num);
+    printf("_%d_\n", exp->u.num);
   } else if (exp->kind == A_opExp) {
     display_exp(exp->u.op.left);
-    printf(">%s_\n", A_binop_decriptor[exp->u.op.oper]);
+    printf("_%s_\n", A_binop_decriptor[exp->u.op.oper]);
     display_exp(exp->u.op.right);
-  } else if (exp->kind == A_eseqExp) {
-    display_exp(exp->u.eseq.exp);
   } else {
-    printf("error %s\n", A_exp_decriptor[exp->kind]);
+    printf("A_exp error %s\n", A_exp_decriptor[exp->kind]);
   }
 }
 
 // struct A_stm_ {
-//   enum { A_compoundStm, A_assignStm, A_printStm } kind;
+//   enum { A_assignStm, A_printStm, A_ifStm } kind;
 char *A_stm_decriptor[3] = {
-    "A_compoundStm", "A_assignStm", "A_printStm",
+    "A_assignStm", "A_printStm", "A_ifStm",
 };
 
-void display_stm(A_stm stm) {
-  printf("stm: %s\n", A_stm_decriptor[stm->kind]);
-  if (stm->kind == A_compoundStm) {
-    display_stm(stm->u.compound.stm1);
-    if (stm->u.compound.stm2 != NULL) {
-      display_stm(stm->u.compound.stm2);
-    } else {
-      printf("expList: null stm\n");
-    }
-  } else if (stm->kind == A_assignStm) {
+void display_stm(A_stm_p stm) {
+  printf("A_stmStm: %s\n", A_stm_decriptor[stm->kind]);
+  if (stm->kind == A_assignStm) {
     display_exp(stm->u.assign.exp);
   } else if (stm->kind == A_printStm) {
     if (stm->u.print.exps != NULL) {
       display_expList(stm->u.print.exps);
     }
+  } else if (stm->kind == A_ifStm) {
+    if (stm->u.if_kw.cond != NULL) {
+      display_exp(stm->u.if_kw.cond);
+    } else {
+      printf("A_stmStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
+    }
+    if (stm->u.if_kw.then != NULL) {
+      display_stmList(stm->u.if_kw.then);
+    } else {
+      printf("A_stmStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
+    }
+    if (stm->u.if_kw.otherwise != NULL) {
+      display_stmList(stm->u.if_kw.otherwise);
+    }
   } else {
-    printf("error %s\n", A_stm_decriptor[stm->kind]);
+    printf("A_stmStm error %s\n", A_stm_decriptor[stm->kind]);
   }
 }
 
-A_stm A_CompoundStm(A_stm stm1, A_stm stm2) {
-  printf("spl create A_CompoundStm\n");
-  A_stm s = checked_malloc(sizeof *s);
-  s->kind = A_compoundStm;
-  s->u.compound.stm1 = stm1;
-  s->u.compound.stm2 = stm2;
+// struct A_stm_ {
+//   enum { A_assignStm, A_printStm, A_ifStm } kind;
+char *A_stmList_decriptor[1] = {"A_StmList"};
+
+void display_stmList(A_stmList_p stmList) {
+  printf("display_stmList: %s\n", A_stmList_decriptor[stmList->kind]);
+  display_stm(stmList->head);
+
+  if (stmList->tail != NULL) {
+    display_stm(stmList->tail->head);
+  } else {
+    printf("A_stmList: end of A_stmList\n");
+  }
+}
+
+A_stmList_p A_StmList(A_stm_p head, A_stmList_p tail) {
+  debug_printf("spl create A_StmList\n");
+  A_stmList_p s = checked_malloc(sizeof *s);
+  s->head = head;
+  s->tail = tail;
   return s;
 }
 
-A_stm A_AssignStm(string id, A_exp exp) {
-  printf("spl create A_AssignStm\n");
-  A_stm s = checked_malloc(sizeof *s);
+A_stm_p A_AssignStm(string id, A_exp_p exp) {
+  debug_printf("spl create A_AssignStm\n");
+  A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_assignStm;
   s->u.assign.id = id;
   s->u.assign.exp = exp;
   return s;
 }
 
-A_stm A_PrintStm(A_expList exps) {
-  printf("spl create A_PrintStm\n");
-  A_stm s = checked_malloc(sizeof *s);
+A_stm_p A_PrintStm(A_expList_p exps) {
+  debug_printf("spl create A_PrintStm\n");
+  A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_printStm;
   s->u.print.exps = exps;
   return s;
 }
 
-A_exp A_IdExp(string id) {
-  printf("spl create A_IdExp\n");
-  A_exp e = checked_malloc(sizeof *e);
+A_stm_p A_IfStm(A_exp_p cond, A_stmList_p then, A_stmList_p otherwise) {
+  debug_printf("spl create A_IfStm\n");
+  A_stm_p s = checked_malloc(sizeof *s);
+  s->kind = A_ifStm;
+  s->u.if_kw.cond = cond;
+  s->u.if_kw.then = then;
+  s->u.if_kw.otherwise = otherwise;
+  return s;
+}
+
+A_exp_p A_IdExp(string id) {
+  debug_printf("spl create A_IdExp\n");
+  A_exp_p e = checked_malloc(sizeof *e);
   e->kind = A_idExp;
   e->u.id = id;
   return e;
 }
 
-A_exp A_NumExp(int num) {
-  printf("spl create A_NumExp\n");
-  A_exp e = checked_malloc(sizeof *e);
+A_exp_p A_NumExp(int num) {
+  debug_printf("spl create A_NumExp\n");
+  A_exp_p e = checked_malloc(sizeof *e);
   e->kind = A_numExp;
   e->u.num = num;
   return e;
 }
 
-A_exp A_OpExp(A_exp left, A_binop oper, A_exp right) {
-  printf("spl create A_OpExp\n");
-  A_exp e = checked_malloc(sizeof *e);
+A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right) {
+  debug_printf("spl create A_OpExp\n");
+  A_exp_p e = checked_malloc(sizeof *e);
   e->kind = A_opExp;
   e->u.op.left = left;
   e->u.op.oper = oper;
@@ -126,19 +163,10 @@ A_exp A_OpExp(A_exp left, A_binop oper, A_exp right) {
   return e;
 }
 
-A_exp A_EseqExp(A_stm stm, A_exp exp) {
-  printf("spl create A_EseqExp\n");
-  A_exp e = checked_malloc(sizeof *e);
-  e->kind = A_eseqExp;
-  e->u.eseq.stm = stm;
-  e->u.eseq.exp = exp;
-  return e;
-}
-
-A_expList A_PairExpList(A_exp head, A_expList tail) {
-  printf("spl create A_PairExpList\n");
-  A_expList e = checked_malloc(sizeof *e);
-  e->kind = A_pairExpList;
+A_expList_p A_ExpList(A_exp_p head, A_expList_p tail) {
+  debug_printf("spl create A_ExpList\n");
+  A_expList_p e = checked_malloc(sizeof *e);
+  e->kind = A_expList;
   e->head = head;
   e->tail = tail;
   return e;
