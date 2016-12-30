@@ -47,9 +47,9 @@ struct A_prog_s {
   } u;
   A_prog_p tail;
 } A_prog_t;
-extern A_prog_p A_AssignStm(string id, A_exp_p exp);
-extern A_prog_p A_PrintStm(A_expList_p exps);
-extern A_prog_p A_IfStm(A_exp_p cond, A_prog_p then, A_prog_p otherwise);
+extern A_prog_p A_AssignStm(string id, A_exp_p exp, A_prog_p tail);
+extern A_prog_p A_PrintStm(A_expList_p exps, A_prog_p tail);
+extern A_prog_p A_IfStm(A_exp_p cond, A_prog_p then, A_prog_p otherwise, A_prog_p tail);
 
 /*
  * Exp -> id             (IdExp)
@@ -77,11 +77,11 @@ extern A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right);
  * ExpList -> Exp  epsilon  (PairExpList)
  */
 struct A_expList_s {
-  enum { A_pairExpList } kind;
+  enum { A_expList } kind;
   A_exp_p head;
   A_expList_p tail;
 } A_expList_t;
-extern A_expList_p A_PairExpList(A_exp_p head, A_expList_p tail);
+extern A_expList_p A_ExpList(A_exp_p head, A_expList_p tail);
 
 extern void display_stm(A_prog_p stm);
 extern void display_exp(A_exp_p exp);

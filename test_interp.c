@@ -15,13 +15,7 @@ int main() {
   printf("display_stm:\n");
   display_stm(stm);
   printf("interp:\n");
-  interp(stm);
-
-  // printf("prog_test4():\n");
-  // interp_multi(prog_test4());
-  //
-  // printf("prog_test5():\n");
-  // interp_multi(prog_test5());
+  interper(stm);
 
   return 0;
 }

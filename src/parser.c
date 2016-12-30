@@ -101,7 +101,7 @@ A_expList_p parseExpList(void) {
 
   token_peek(&tok);
   printf("parseExpList: token_peek %s\n", tok.value);
-  explist = A_PairExpList(parseExp(), NULL);
+  explist = A_ExpList(parseExp(), NULL);
   if (token_is_punc(",") == 1) {
     token_skip_punc(",");
     explist->tail = parseExpList();
@@ -125,11 +125,11 @@ A_prog_p parseStm(void) {
     char *varname = parse_varname();
     token_next();
     token_skip_op("=");
-    stm = A_AssignStm(varname, parseExp());
+    stm = A_AssignStm(varname, parseExp(), NULL);
   } else if (token_is_kw("print") == 1) {
     token_skip_kw("print");
     token_skip_punc("(");
-    stm = A_PrintStm(parseExpList());
+    stm = A_PrintStm(parseExpList(), NULL);
     token_skip_punc(")");
   } else if (token_is_kw("if") == 1) {
     A_exp_p cond;
@@ -148,7 +148,7 @@ A_prog_p parseStm(void) {
       otherwise = parseProg();
       token_skip_punc("}");
     }
-    stm = A_IfStm(cond, then, otherwise);
+    stm = A_IfStm(cond, then, otherwise, NULL);
   }
 
   /* end of Stm */
@@ -161,40 +161,6 @@ A_prog_p parseStm(void) {
   return NULL;
 }
 
-#if 0
-A_prog_p parseProg(void) {
-  int i = 0;
-  int run = 1;
-  token_t tok;
-  A_prog_p head;
-  A_prog_p stm = NULL;
-
-  token_peek(&tok);
-  printf("\nparseProg [%d]\n", i++);
-  head = parseStm();
-  token_skip_punc(";");
-  stm = head;
-  if (token_eof() == 1) {
-    run = 0;
-  }
-  while (run == 1) {
-    printf("\nparseProg [%d]\n", i++);
-    stm->tail = parseStm();
-    token_skip_punc(";");
-
-    if (token_is_punc("}") == 1) {
-      printf("parseProg } found\n");
-      run = 0;
-    }
-    if (token_eof() == 1) {
-      run = 0;
-    }
-    stm = stm->tail;
-  }
-
-  return head;
-}
-#else
 A_prog_p parseProg(void) {
   int i = 0;
   int run = 1;
@@ -232,7 +198,6 @@ A_prog_p parseProg(void) {
 
   return head;
 }
-#endif
 
 void parse_init(char *ptr) {
   /* init token */

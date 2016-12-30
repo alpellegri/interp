@@ -147,7 +147,7 @@ IntAndTable_p interpExpList(A_expList_p expList, Table_ t) {
   IntAndTable_p it;
 
   switch (expList->kind) {
-  case A_pairExpList:
+  case A_expList:
     it = interpExp(expList->head, t);
     // printf("%d\n", it->i);
     if (expList->tail == NULL) {
