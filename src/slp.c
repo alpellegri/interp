@@ -86,7 +86,6 @@ void display_stm(A_prog_p stm) {
   }
 }
 
-
 A_prog_p A_AssignStm(string id, A_exp_p exp) {
   printf("spl create A_AssignStm\n");
   A_prog_p s = checked_malloc(sizeof *s);

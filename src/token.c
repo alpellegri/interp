@@ -28,9 +28,7 @@ const char whitespace[] = " \t\n";
 
 token_t current;
 
-void input_init(char *ptr) {
-  input_input = ptr;
-};
+void input_init(char *ptr) { input_input = ptr; };
 
 char input_charAt(int pos) {
   // debug_printf("InputStream->charAt %d\n", pos);

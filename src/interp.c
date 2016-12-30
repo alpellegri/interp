@@ -193,7 +193,7 @@ Table_ interpStm(A_prog_p s, Table_ t) {
 
 void interper(A_prog_p stm) {
 
-Table_ ctx = NULL;
+  Table_ ctx = NULL;
   while (stm != NULL) {
     ctx = interpStm(stm, ctx);
     stm = stm->tail;
