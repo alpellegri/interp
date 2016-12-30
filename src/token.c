@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "input.h"
 #include "slp.h"
 #include "token.h"
 #include "util.h"
@@ -12,11 +13,6 @@
 #else
 #define debug_printf(fmt, args...) /* Don't do anything in release builds */
 #endif
-
-char *input_input = NULL;
-int input_pos = 0;
-int input_line = 1;
-int input_col = 0;
 
 // const char keywords[] = " if then else lambda λ true false ";
 const char keywords[] = " print if else ";
@@ -29,37 +25,6 @@ const char whitespace[] = " \t\n";
 
 token_t current;
 
-void input_init(char *ptr) { input_input = ptr; };
-
-char input_charAt(int pos) {
-  // debug_printf("InputStream->charAt %d\n", pos);
-  return input_input[pos];
-};
-
-char input_next() {
-  // debug_printf("InputStream->next %d\n", pos);
-  char ch = input_charAt(input_pos++);
-  if (ch == '\n') {
-    input_line++, input_col = 0;
-  } else {
-    input_col++;
-  }
-  return ch;
-};
-
-char input_peek(void) {
-  // debug_printf("InputStream->peek %d\n", pos);
-  return input_charAt(input_pos);
-};
-
-int input_eof(void) {
-  // debug_printf("InputStream->eof %d\n", input_pos);
-  return input_peek() == '\0';
-};
-
-void input_croak(char *str) { printf("croak char: %s \n", str); };
-
-/* tokenizer */
 static int is_keyword(char *str) {
   int ret;
   ret = (strstr(keywords, str) != NULL);

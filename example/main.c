@@ -71,7 +71,7 @@ int main(void) {
   printf("interp program\n");
   printf("*\n");
   // the evaluation function
-  interper(prog);
+  interp(prog);
 
   return 0;
 }

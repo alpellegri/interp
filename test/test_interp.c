@@ -14,14 +14,14 @@ int main() {
   printf("display_stm:\n");
   display_stmList(stmList);
   printf("interp:\n");
-  interper(stmList);
+  interp(stmList);
 
   printf("\nprog_test2:\n");
   stmList = prog_test2();
   printf("display_stm:\n");
   display_stmList(stmList);
   printf("interp:\n");
-  interper(stmList);
+  interp(stmList);
 
   return 0;
 }

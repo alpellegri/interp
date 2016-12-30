@@ -36,7 +36,7 @@ extern IntAndTable_p IntAndTable(int i, Table_ t);
  * "Interpret" a program in this language.
  */
 extern Table_ interpStmList(A_stmList_p stm, Table_ ctx);
-extern void interper(A_stmList_p stmList);
+extern void interp(A_stmList_p stmList);
 
 /*
  * Produce a new table from the specified table.  The new table is just like

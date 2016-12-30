@@ -199,7 +199,7 @@ Table_ interpStmList(A_stmList_p stmList, Table_ ctx) {
   return ctx;
 }
 
-void interper(A_stmList_p stmList) {
+void interp(A_stmList_p stmList) {
   Table_ ctx = NULL;
   ctx = interpStmList(stmList, ctx);
 }
