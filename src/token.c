@@ -14,10 +14,9 @@
 #define debug_printf(fmt, args...) /* Don't do anything in release builds */
 #endif
 
-// const char keywords[] = " if then else lambda λ true false ";
 const char keywords[] = " print if else ";
 const char digit[] = "0123456789";
-const char id_start[] = "abcdefghikjlmnopqrstuvzwxyλ_";
+const char id_start[] = "abcdefghikjlmnopqrstuvzwxy_";
 const char id[] = "?!-<>=0123456789";
 const char op_char[] = "+-*/%=&|<>!";
 const char punc[] = ",;(){}[]";
@@ -126,60 +125,53 @@ void read_once(char *str, int (*predicate)(char ch)) {
   str[i] = '\0'; // append string terminator
 }
 
-int read_number(token_t *token) {
+void read_number(token_t *token) {
   read_while(token->value, is_digit);
   // return { type: "num", value: parseFloat(number) };
   token->type = token_num;
   debug_printf("read_number is: _%s_\n", token->value);
-  return 1;
 }
 
-int read_ident(token_t *token) {
+void read_ident(token_t *token) {
   read_while(token->value, is_id_start);
   // return { type: is_keyword(id) ? "kw" : "var", value: id };
   token->type = is_keyword(token->value) ? (token_kw) : (token_var);
   debug_printf("read_ident is: _%s_\n", token->value);
-  return 1;
 }
 
-int read_punc(token_t *token) {
+void read_punc(token_t *token) {
   read_once(token->value, is_punc);
   // return { type: is_keyword(id) ? "kw" : "var", value: id };
   token->type = token_punc;
   debug_printf("read_punc is:  _%s_\n", token->value);
-  return 1;
 }
 
-int read_op_char(token_t *token) {
+void read_op_char(token_t *token) {
   read_while(token->value, is_op_char);
   // return { type: is_keyword(id) ? "kw" : "var", value: id };
   token->type = token_op;
   debug_printf("read_op_char is: _%s_\n", token->value);
-  return 1;
 }
 
-int read_string(token_t *token) {
+void read_string(token_t *token) {
   read_while(token->value, is_not_eos);
   // return { type: "str", value: read_escaped('"') };
   token->type = token_str;
   debug_printf("read_string is:  _%s_\n", token->value);
-  return 1;
 }
 
-int read_comment(token_t *token) {
+void read_comment(token_t *token) {
   // read_while(function(ch){ return ch != "\n" });
   read_while(token->value, is_not_eol);
   debug_printf("skip_comment is: _%s_\n", token->value);
   // input.next();
-  return 1;
 }
 
-int read_next(token_t *token) {
+void read_next(token_t *token) {
   // debug_printf("TokenStream->read_next\n");
-  int ret = 1;
   read_while(token->value, is_whitespace);
   if (input_eof()) {
-    ret = 0;
+    return;
   } else {
     current.unempty = 1;
     char ch = input_peek();
@@ -187,55 +179,51 @@ int read_next(token_t *token) {
       input_next(); // consume first #
       read_comment(token);
       read_next(token);
-      return 1;
+      return;
     }
     if (ch == '\"') {
       input_next(); // consume first "
       read_string(token);
       input_next(); // consume last "
-      return 1;
+      return;
     }
     if (is_digit(ch)) {
       read_number(token);
-      return 1;
+      return;
     }
     if (is_id_start(ch)) {
       read_ident(token);
-      return 1;
+      return;
     }
     if (is_punc(ch)) {
       // return { type: "punc", value: input.next() };
       read_punc(token);
-      return 1;
+      return;
     }
     if (is_op_char(ch)) {
       // return { type: "op", value: read_while(is_op_char)};
       read_op_char(token);
-      return 1;
+      return;
     }
     char str[2] = "\0"; /* gives {\0, \0} */
     str[0] = ch;
     input_croak(str);
-    ret = 0;
   }
-  return ret;
 }
 
 void token_init(char *ptr) { input_init(ptr); };
 
-int token_peek(token_t *token) {
+void token_peek(token_t *token) {
   // return current || (current = read_next());
   if (current.unempty == 0) {
     read_next(&current);
   }
   memcpy(token, &current, sizeof(token_t));
-  return 1;
 }
 
-int token_next() {
+void token_next() {
   memset(&current, 0x00, sizeof(token_t));
   read_next(&current);
-  return 1;
 }
 
 int token_eof(void) {
