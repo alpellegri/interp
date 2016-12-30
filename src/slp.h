@@ -20,16 +20,28 @@ typedef enum {
   A_gt
 } A_binop;
 
-typedef struct A_prog_s *A_prog_p;
+typedef struct A_stmList_s *A_stmList_p;
+typedef struct A_stm_s *A_stm_p;
 typedef struct A_exp_s *A_exp_p;
 typedef struct A_expList_s *A_expList_p;
+
+/*
+* StmList -> Stm, StmList  (StmList)
+* StmList -> Stm  epsilon  (StmList)
+ */
+struct A_stmList_s {
+  enum { A_stmList } kind;
+  A_stm_p head;
+  A_stmList_p tail;
+} A_stmList_t;
+extern A_stmList_p A_StmList(A_stm_p head, A_stmList_p tail);
 
 /*
  * Stm -> id := Exp      (AssignStm)
  * Stm -> print(ExpList) (PrintStm)
  * Stm -> if(Exp)        (IfStm)
  */
-struct A_prog_s {
+struct A_stm_s {
   enum { A_assignStm, A_printStm, A_ifStm } kind;
   union {
     struct {
@@ -41,15 +53,14 @@ struct A_prog_s {
     } print;
     struct {
       A_exp_p cond;
-      A_prog_p then;
-      A_prog_p otherwise;
+      A_stmList_p then;
+      A_stmList_p otherwise;
     } if_kw;
   } u;
-  A_prog_p tail;
-} A_prog_t;
-extern A_prog_p A_AssignStm(string id, A_exp_p exp, A_prog_p tail);
-extern A_prog_p A_PrintStm(A_expList_p exps, A_prog_p tail);
-extern A_prog_p A_IfStm(A_exp_p cond, A_prog_p then, A_prog_p otherwise, A_prog_p tail);
+} A_stm_t;
+extern A_stm_p A_AssignStm(string id, A_exp_p exp);
+extern A_stm_p A_PrintStm(A_expList_p exps);
+extern A_stm_p A_IfStm(A_exp_p cond, A_stmList_p then, A_stmList_p otherwise);
 
 /*
  * Exp -> id             (IdExp)
@@ -73,8 +84,8 @@ extern A_exp_p A_NumExp(int num);
 extern A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right);
 
 /*
- * ExpList -> Exp, ExpList  (PairExpList)
- * ExpList -> Exp  epsilon  (PairExpList)
+ * ExpList -> Exp, ExpList  (ExpList)
+ * ExpList -> Exp  epsilon  (ExpList)
  */
 struct A_expList_s {
   enum { A_expList } kind;
@@ -83,7 +94,8 @@ struct A_expList_s {
 } A_expList_t;
 extern A_expList_p A_ExpList(A_exp_p head, A_expList_p tail);
 
-extern void display_stm(A_prog_p stm);
+extern void display_stmList(A_stmList_p stmList);
+extern void display_stm(A_stm_p stm);
 extern void display_exp(A_exp_p exp);
 extern void display_expList(A_expList_p expList);
 

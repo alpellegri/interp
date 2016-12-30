@@ -161,7 +161,7 @@ IntAndTable_p interpExpList(A_expList_p expList, Table_ t) {
   }
 }
 
-Table_ interpStm(A_prog_p s, Table_ t) {
+Table_ interpStm(A_stm_p s, Table_ t) {
   IntAndTable_p it;
 
   switch (s->kind) {
@@ -176,33 +176,30 @@ Table_ interpStm(A_prog_p s, Table_ t) {
   case A_ifStm:
     it = interpExp(s->u.if_kw.cond, t);
     if (it->i != 0) {
-      t = interp(s->u.if_kw.then, t);
+      t = interpStmList(s->u.if_kw.then, t);
     } else {
       if (s->u.if_kw.otherwise != NULL) {
-        t = interp(s->u.if_kw.otherwise, t);
+        t = interpStmList(s->u.if_kw.otherwise, t);
       }
     }
     return it->t;
   default:
     /* This should not happen! */
-    assert(!"Wrong kind-value for A_prog_p!");
+    assert(!"Wrong kind-value for A_stm_p!");
   }
 
   return t;
 }
 
-void interper(A_prog_p stm) {
-
-  Table_ ctx = NULL;
-  while (stm != NULL) {
-    ctx = interpStm(stm, ctx);
-    stm = stm->tail;
-  }
-}
-Table_ interp(A_prog_p stm, Table_ ctx) {
-  while (stm != NULL) {
-    ctx = interpStm(stm, ctx);
-    stm = stm->tail;
+Table_ interpStmList(A_stmList_p stmList, Table_ ctx) {
+  while (stmList != NULL) {
+    ctx = interpStm(stmList->head, ctx);
+    stmList = stmList->tail;
   }
   return ctx;
+}
+
+void interper(A_stmList_p stmList) {
+  Table_ ctx = NULL;
+  ctx = interpStmList(stmList, ctx);
 }

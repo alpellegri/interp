@@ -53,8 +53,8 @@ char *A_stm_decriptor[3] = {
     "A_assignStm", "A_printStm", "A_ifStm",
 };
 
-void display_stm(A_prog_p stm) {
-  printf("A_progStm: %s\n", A_stm_decriptor[stm->kind]);
+void display_stm(A_stm_p stm) {
+  printf("A_stmStm: %s\n", A_stm_decriptor[stm->kind]);
   if (stm->kind == A_assignStm) {
     display_exp(stm->u.assign.exp);
   } else if (stm->kind == A_printStm) {
@@ -65,54 +65,68 @@ void display_stm(A_prog_p stm) {
     if (stm->u.if_kw.cond != NULL) {
       display_exp(stm->u.if_kw.cond);
     } else {
-      printf("A_progStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
+      printf("A_stmStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
     }
     if (stm->u.if_kw.then != NULL) {
-      display_stm(stm->u.if_kw.then);
+      display_stmList(stm->u.if_kw.then);
     } else {
-      printf("A_progStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
+      printf("A_stmStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
     }
     if (stm->u.if_kw.otherwise != NULL) {
-      display_stm(stm->u.if_kw.otherwise);
+      display_stmList(stm->u.if_kw.otherwise);
     }
   } else {
-    printf("A_progStm error %s\n", A_stm_decriptor[stm->kind]);
-  }
-
-  if (stm->tail != NULL) {
-    display_stm(stm->tail);
-  } else {
-    printf("A_progStm: end of A_progStm\n");
+    printf("A_stmStm error %s\n", A_stm_decriptor[stm->kind]);
   }
 }
 
-A_prog_p A_AssignStm(string id, A_exp_p exp, A_prog_p tail) {
+// struct A_stm_ {
+//   enum { A_assignStm, A_printStm, A_ifStm } kind;
+char *A_stmList_decriptor[1] = {"A_StmList"};
+
+void display_stmList(A_stmList_p stmList) {
+  printf("display_stmList: %s\n", A_stmList_decriptor[stmList->kind]);
+  display_stm(stmList->head);
+
+  if (stmList->tail != NULL) {
+    display_stm(stmList->tail->head);
+  } else {
+    printf("A_stmList: end of A_stmList\n");
+  }
+}
+
+A_stmList_p A_StmList(A_stm_p head, A_stmList_p tail) {
+  printf("spl create A_StmList\n");
+  A_stmList_p s = checked_malloc(sizeof *s);
+  s->head = head;
+  s->tail = tail;
+  return s;
+}
+
+A_stm_p A_AssignStm(string id, A_exp_p exp) {
   printf("spl create A_AssignStm\n");
-  A_prog_p s = checked_malloc(sizeof *s);
+  A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_assignStm;
   s->u.assign.id = id;
   s->u.assign.exp = exp;
-  s->tail = tail;
   return s;
 }
 
-A_prog_p A_PrintStm(A_expList_p exps, A_prog_p tail) {
+A_stm_p A_PrintStm(A_expList_p exps) {
   printf("spl create A_PrintStm\n");
-  A_prog_p s = checked_malloc(sizeof *s);
+  A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_printStm;
   s->u.print.exps = exps;
-  s->tail = tail;
   return s;
 }
 
-A_prog_p A_IfStm(A_exp_p cond, A_prog_p then, A_prog_p otherwise, A_prog_p tail) {
+A_stm_p A_IfStm(A_exp_p cond, A_stmList_p then, A_stmList_p otherwise) {
   printf("spl create A_IfStm\n");
-  A_prog_p s = checked_malloc(sizeof *s);
+  A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_ifStm;
   s->u.if_kw.cond = cond;
   s->u.if_kw.then = then;
   s->u.if_kw.otherwise = otherwise;
-  s->tail = tail;
   return s;
 }
 

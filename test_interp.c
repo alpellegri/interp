@@ -7,15 +7,15 @@
 
 int main() {
 
-  A_prog_p stm;
+  A_stmList_p stmList;
 
   printf("prog():\n");
   // stm = prog_test2();
-  stm = prog_test3();
+  stmList = prog_test1();
   printf("display_stm:\n");
-  display_stm(stm);
+  display_stmList(stmList);
   printf("interp:\n");
-  interper(stm);
+  interper(stmList);
 
   return 0;
 }
