@@ -169,7 +169,6 @@ A_stm_p parseStm(void) {
 }
 
 A_stmList_p parseStmList(void) {
-  int i = 0;
   int run = 1;
   token_t tok;
   A_stmList_p head;

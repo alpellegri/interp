@@ -62,10 +62,10 @@ int main(void) {
   printf("*\n");
   prog = parse();
 
-  printf("*\n");
-  printf("display program\n");
-  printf("*\n");
-  display_stmList(prog);
+  // printf("*\n");
+  // printf("display program\n");
+  // printf("*\n");
+  // display_stmList(prog);
 
   printf("*\n");
   printf("interp program\n");
