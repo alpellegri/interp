@@ -3,6 +3,13 @@
 #include "slp.h"
 #include "util.h"
 
+// #define DEBUG
+#ifdef DEBUG
+#define debug_printf(fmt, args...) printf(fmt, ##args)
+#else
+#define debug_printf(fmt, args...) /* Don't do anything in release builds */
+#endif
+
 // struct A_expList_ {
 //   enum { A_expList } kind;
 char *A_expList_decriptor[1] = {"A_expList"};
@@ -96,7 +103,7 @@ void display_stmList(A_stmList_p stmList) {
 }
 
 A_stmList_p A_StmList(A_stm_p head, A_stmList_p tail) {
-  printf("spl create A_StmList\n");
+  debug_printf("spl create A_StmList\n");
   A_stmList_p s = checked_malloc(sizeof *s);
   s->head = head;
   s->tail = tail;
@@ -104,7 +111,7 @@ A_stmList_p A_StmList(A_stm_p head, A_stmList_p tail) {
 }
 
 A_stm_p A_AssignStm(string id, A_exp_p exp) {
-  printf("spl create A_AssignStm\n");
+  debug_printf("spl create A_AssignStm\n");
   A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_assignStm;
   s->u.assign.id = id;
@@ -113,7 +120,7 @@ A_stm_p A_AssignStm(string id, A_exp_p exp) {
 }
 
 A_stm_p A_PrintStm(A_expList_p exps) {
-  printf("spl create A_PrintStm\n");
+  debug_printf("spl create A_PrintStm\n");
   A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_printStm;
   s->u.print.exps = exps;
@@ -121,7 +128,7 @@ A_stm_p A_PrintStm(A_expList_p exps) {
 }
 
 A_stm_p A_IfStm(A_exp_p cond, A_stmList_p then, A_stmList_p otherwise) {
-  printf("spl create A_IfStm\n");
+  debug_printf("spl create A_IfStm\n");
   A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_ifStm;
   s->u.if_kw.cond = cond;
@@ -131,7 +138,7 @@ A_stm_p A_IfStm(A_exp_p cond, A_stmList_p then, A_stmList_p otherwise) {
 }
 
 A_exp_p A_IdExp(string id) {
-  printf("spl create A_IdExp\n");
+  debug_printf("spl create A_IdExp\n");
   A_exp_p e = checked_malloc(sizeof *e);
   e->kind = A_idExp;
   e->u.id = id;
@@ -139,7 +146,7 @@ A_exp_p A_IdExp(string id) {
 }
 
 A_exp_p A_NumExp(int num) {
-  printf("spl create A_NumExp\n");
+  debug_printf("spl create A_NumExp\n");
   A_exp_p e = checked_malloc(sizeof *e);
   e->kind = A_numExp;
   e->u.num = num;
@@ -147,7 +154,7 @@ A_exp_p A_NumExp(int num) {
 }
 
 A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right) {
-  printf("spl create A_OpExp\n");
+  debug_printf("spl create A_OpExp\n");
   A_exp_p e = checked_malloc(sizeof *e);
   e->kind = A_opExp;
   e->u.op.left = left;
@@ -157,7 +164,7 @@ A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right) {
 }
 
 A_expList_p A_ExpList(A_exp_p head, A_expList_p tail) {
-  printf("spl create A_ExpList\n");
+  debug_printf("spl create A_ExpList\n");
   A_expList_p e = checked_malloc(sizeof *e);
   e->kind = A_expList;
   e->head = head;

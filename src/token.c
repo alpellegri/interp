@@ -6,10 +6,11 @@
 #include "token.h"
 #include "util.h"
 
-#if 1
-#define debug_printf(x, y)
+// #define DEBUG
+#ifdef DEBUG
+#define debug_printf(fmt, args...) printf(fmt, ##args)
 #else
-#define debug_printf(x, y) printf(x, y)
+#define debug_printf(fmt, args...) /* Don't do anything in release builds */
 #endif
 
 char *input_input = NULL;

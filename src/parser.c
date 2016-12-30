@@ -7,6 +7,13 @@
 #include "token.h"
 #include "util.h"
 
+// #define DEBUG
+#ifdef DEBUG
+#define debug_printf(fmt, args...) printf(fmt, ##args)
+#else
+#define debug_printf(fmt, args...) /* Don't do anything in release builds */
+#endif
+
 A_stmList_p parseStmList(void);
 A_stm_p parseStm(void);
 A_exp_p parseExp(void);
@@ -28,7 +35,7 @@ A_exp_p parse_atom(void) {
   token_t tok;
 
   token_peek(&tok);
-  printf("parse_atom: token_peek %s\n", tok.value);
+  debug_printf("parse_atom: token_peek %s\n", tok.value);
   if (token_is_punc("(") == 1) {
     token_next();
     exp = parseExp();
@@ -53,7 +60,7 @@ A_exp_p maybeBinary(A_exp_p left, int prec) {
   A_exp_p right;
   token_t tok;
   token_peek(&tok);
-  printf("maybeBinary: token_peek %s\n", tok.value);
+  debug_printf("maybeBinary: token_peek %s\n", tok.value);
   if (token_is_op_tok() == 1) {
     A_binop oper;
 
@@ -91,7 +98,7 @@ A_exp_p maybeBinary(A_exp_p left, int prec) {
 A_exp_p parseExp(void) {
   token_t tok;
   token_peek(&tok);
-  printf("parseExp: token_peek %s\n", tok.value);
+  debug_printf("parseExp: token_peek %s\n", tok.value);
   return maybeBinary(parse_atom(), 0);
 }
 
@@ -100,7 +107,7 @@ A_expList_p parseExpList(void) {
   token_t tok;
 
   token_peek(&tok);
-  printf("parseExpList: token_peek %s\n", tok.value);
+  debug_printf("parseExpList: token_peek %s\n", tok.value);
   explist = A_ExpList(parseExp(), NULL);
   if (token_is_punc(",") == 1) {
     token_skip_punc(",");
@@ -120,7 +127,7 @@ A_stm_p parseStm(void) {
   A_stm_p stm;
 
   token_peek(&tok);
-  printf("parseStm: token_peek %s\n", tok.value);
+  debug_printf("parseStm: token_peek %s\n", tok.value);
   if (token_is_var(&tok) == 1) {
     char *varname = parse_varname();
     token_next();
@@ -169,12 +176,12 @@ A_stmList_p parseStmList(void) {
   A_stmList_p stmList;
 
   token_peek(&tok);
-  printf("\nparseProg [%d]\n", i++);
+  debug_printf("\nparseProg [%d]\n", i++);
   stmList = A_StmList(parseStm(), NULL);
   token_skip_punc(";");
   head = stmList;
   if (token_is_punc("}") == 1) {
-    printf("parseProg } found\n");
+    debug_printf("parseProg } found\n");
     run = 0;
   }
   if (token_eof() == 1) {
@@ -182,12 +189,12 @@ A_stmList_p parseStmList(void) {
   }
 
   while (run == 1) {
-    printf("\nparseProg [%d]\n", i++);
+    debug_printf("\nparseProg [%d]\n", i++);
     stmList->tail = A_StmList(parseStm(), NULL);
     token_skip_punc(";");
 
     if (token_is_punc("}") == 1) {
-      printf("parseProg } found\n");
+      debug_printf("parseProg } found\n");
       run = 0;
     }
     if (token_eof() == 1) {
