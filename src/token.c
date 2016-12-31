@@ -27,7 +27,7 @@ token_t current;
 static int is_keyword(char *str) {
   int ret;
   ret = (strstr(keywords, str) != NULL);
-  // debug_printf("TokenStream->is_keyword %d\n", ret);
+  debug_printf("TokenStream->is_keyword %d\n", ret);
   return ret;
 };
 
@@ -36,27 +36,27 @@ static int is_digit(char ch) {
   char str[2] = "\0"; /* gives {\0, \0} */
   str[0] = ch;
   ret = (strstr(digit, str) != NULL);
-  // debug_printf("TokenStream->is_digit %d\n", ret);
+  debug_printf("TokenStream->is_digit %d\n", ret);
   return ret;
 }
 
 static int is_id_start(char ch) {
   int ret;
-  // 1return is_id_start(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
+  // return is_id_start(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
   char str[2] = "\0"; /* gives {\0, \0} */
   str[0] = ch;
   ret = (strstr(id_start, str) != NULL);
-  // debug_printf("TokenStream->is_id_start %d\n", ret);
+  debug_printf("TokenStream->is_id_start %d\n", ret);
   return ret;
 }
 
 static int is_id(char ch) {
   int ret;
-  // 1return is_id_start(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
+  // return is_id_start(ch) || "?!-<>=0123456789".indexOf(ch) >= 0;
   char str[2] = "\0"; /* gives {\0, \0} */
   str[0] = ch;
   ret = (strstr(id, str) != NULL);
-  // debug_printf("TokenStream->is_id %d\n", ret);
+  debug_printf("TokenStream->is_id %d\n", ret);
   return ret;
 }
 
@@ -66,7 +66,7 @@ static int is_op_char(char ch) {
   char str[2] = "\0"; /* gives {\0, \0} */
   str[0] = ch;
   ret = (strstr(op_char, str) != NULL);
-  // debug_printf("TokenStream->is_op_char %d\n", ret);
+  debug_printf("TokenStream->is_op_char %d\n", ret);
   return ret;
 }
 
@@ -76,7 +76,7 @@ static int is_punc(char ch) {
   char str[2] = "\0"; /* gives {\0, \0} */
   str[0] = ch;
   ret = (strstr(punc, str) != NULL);
-  // debug_printf("TokenStream->is_punc %d\n", ret);
+  debug_printf("TokenStream->is_punc %d\n", ret);
   return ret;
 }
 
@@ -85,7 +85,7 @@ static int is_whitespace(char ch) {
   char str[2] = "\0"; /* gives {\0, \0} */
   str[0] = ch;
   ret = (strstr(whitespace, str) != NULL);
-  // debug_printf("TokenStream->is_whitespace %d\n", ret);
+  debug_printf("TokenStream->is_whitespace %d\n", ret);
   return ret;
 }
 
@@ -94,7 +94,7 @@ static int is_not_eol(char ch) {
   char str[2] = "\0"; /* gives {\0, \0} */
   str[0] = ch;
   ret = (strstr("\n", str) == NULL);
-  // debug_printf("TokenStream->is_eol %d\n", ret);
+  debug_printf("TokenStream->is_eol %d\n", ret);
   return ret;
 }
 
@@ -103,12 +103,12 @@ static int is_not_eos(char ch) {
   char str[2] = "\0"; /* gives {\0, \0} */
   str[0] = ch;
   ret = (strstr("\"", str) == NULL);
-  // debug_printf("TokenStream->is_eos %d\n", ret);
+  debug_printf("TokenStream->is_eos %d\n", ret);
   return ret;
 }
 
 void read_while(char *str, int (*predicate)(char ch)) {
-  // debug_printf("TokenStream->read_while\n");
+  debug_printf("TokenStream->read_while\n");
   int i = 0;
   while (!input_eof() && predicate(input_peek())) {
     str[i++] = input_next();
@@ -117,7 +117,7 @@ void read_while(char *str, int (*predicate)(char ch)) {
 }
 
 void read_once(char *str, int (*predicate)(char ch)) {
-  // debug_printf("TokenStream->read_while\n");
+  debug_printf("TokenStream->read_while\n");
   int i = 0;
   if (!input_eof() && predicate(input_peek())) {
     str[i++] = input_next();
@@ -168,9 +168,10 @@ void read_comment(token_t *token) {
 }
 
 void read_next(token_t *token) {
-  // debug_printf("TokenStream->read_next\n");
+  debug_printf("TokenStream->read_next\n");
   read_while(token->value, is_whitespace);
   if (input_eof()) {
+    current.unempty = 0;
     return;
   } else {
     current.unempty = 1;
@@ -222,7 +223,7 @@ void token_peek(token_t *token) {
 }
 
 void token_next() {
-  memset(&current, 0x00, sizeof(token_t));
+  // memset(&current, 0x00, sizeof(token_t));
   read_next(&current);
 }
 

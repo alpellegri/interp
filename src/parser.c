@@ -110,7 +110,7 @@ A_expList_p parseExpList(void) {
   debug_printf("parseExpList: token_peek %s\n", tok.value);
   explist = A_ExpList(parseExp(), NULL);
   if (token_is_punc(",") == 1) {
-    token_skip_punc(",");
+    token_next();
     explist->tail = parseExpList();
     return explist;
   } else if (token_is_punc(")") == 1) {
@@ -134,7 +134,7 @@ A_stm_p parseStm(void) {
     token_skip_op("=");
     stm = A_AssignStm(varname, parseExp());
   } else if (token_is_kw("print") == 1) {
-    token_skip_kw("print");
+    token_next();
     token_skip_punc("(");
     stm = A_PrintStm(parseExpList());
     token_skip_punc(")");
@@ -142,7 +142,7 @@ A_stm_p parseStm(void) {
     A_exp_p cond;
     A_stmList_p then;
     A_stmList_p otherwise = NULL;
-    token_skip_kw("if");
+    token_next();
     token_skip_punc("(");
     cond = parseExp();
     token_skip_punc(")");
@@ -150,7 +150,7 @@ A_stm_p parseStm(void) {
     then = parseStmList();
     token_skip_punc("}");
     if (token_is_kw("else") == 1) {
-      token_skip_kw("else");
+      token_next();
       token_skip_punc("{");
       otherwise = parseStmList();
       token_skip_punc("}");
