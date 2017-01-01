@@ -22,8 +22,6 @@ typedef struct token_s {
   token_value_t value;
 } token_t;
 
-typedef token_t* token_p;
-
 extern void token_init(char *ptr);
 extern void token_peek(token_t *token);
 extern void token_next();

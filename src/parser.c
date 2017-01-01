@@ -65,6 +65,7 @@ A_exp_p maybeBinary(A_exp_p left, int prec) {
   if (token_is_op_tok() == 1) {
     A_binop oper;
 
+    debug_printf("maybeBinary: token_is_op_tok\n");
     token_next();
     right = maybeBinary(parse_atom(), 0);
     if ((strcmp("+", tok.value) == 0)) {

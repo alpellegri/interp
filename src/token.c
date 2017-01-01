@@ -216,7 +216,6 @@ void token_peek(token_t *token) {
 }
 
 void token_next(void) {
-  // memset(&current, 0x00, sizeof(token_t));
   read_next();
 }
 
