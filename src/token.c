@@ -107,7 +107,7 @@ static int is_not_eos(char ch) {
   return ret;
 }
 
-void read_while(char *str, int (*predicate)(char ch)) {
+static void read_while(char *str, int (*predicate)(char ch)) {
   debug_printf("TokenStream->read_while\n");
   int i = 0;
   while (!input_eof() && predicate(input_peek())) {
@@ -116,7 +116,7 @@ void read_while(char *str, int (*predicate)(char ch)) {
   str[i] = '\0'; // append string terminator
 }
 
-void read_once(char *str, int (*predicate)(char ch)) {
+static void read_once(char *str, int (*predicate)(char ch)) {
   debug_printf("TokenStream->read_while\n");
   int i = 0;
   if (!input_eof() && predicate(input_peek())) {
@@ -125,54 +125,53 @@ void read_once(char *str, int (*predicate)(char ch)) {
   str[i] = '\0'; // append string terminator
 }
 
-void read_number(void) {
+static void read_number(void) {
   read_while(current.value, is_digit);
   // return { type: "num", value: parseFloat(number) };
   current.type = token_num;
   debug_printf("read_number is: _%s_\n", current.value);
 }
 
-void read_ident(void) {
+static void read_ident(void) {
   read_while(current.value, is_id_start);
   // return { type: is_keyword(id) ? "kw" : "var", value: id };
   current.type = is_keyword(current.value) ? (token_kw) : (token_var);
   debug_printf("read_ident is: _%s_\n", current.value);
 }
 
-void read_punc(void) {
+static void read_punc(void) {
   read_once(current.value, is_punc);
   // return { type: is_keyword(id) ? "kw" : "var", value: id };
   current.type = token_punc;
   debug_printf("read_punc is:  _%s_\n", current.value);
 }
 
-void read_op_char(void) {
+static void read_op_char(void) {
   read_while(current.value, is_op_char);
   // return { type: is_keyword(id) ? "kw" : "var", value: id };
   current.type = token_op;
   debug_printf("read_op_char is: _%s_\n", current.value);
 }
 
-void read_string(void) {
+static void read_string(void) {
   read_while(current.value, is_not_eos);
   // return { type: "str", value: read_escaped('"') };
   current.type = token_str;
   debug_printf("read_string is:  _%s_\n", current.value);
 }
 
-void read_comment(void) {
+static void read_comment(void) {
   // read_while(function(ch){ return ch != "\n" });
   read_while(current.value, is_not_eol);
-  debug_printf("skip_comment is: _%s_\n", token->value);
+  debug_printf("skip_comment is: _%s_\n", current.value);
   // input.next();
 }
 
-void read_next(void) {
+static void read_next(void) {
   debug_printf("TokenStream->read_next\n");
   read_while(current.value, is_whitespace);
   if (input_eof()) {
     current.unempty = 0;
-    return;
   } else {
     current.unempty = 1;
     char ch = input_peek();
@@ -181,27 +180,22 @@ void read_next(void) {
       read_comment();
       read_next();
       return;
-    }
-    if (ch == '\"') {
+    } else if (ch == '\"') {
       input_next(); // consume first "
       read_string();
       input_next(); // consume last "
       return;
-    }
-    if (is_digit(ch)) {
+    } else if (is_digit(ch)) {
       read_number();
       return;
-    }
-    if (is_id_start(ch)) {
+    } else if (is_id_start(ch)) {
       read_ident();
       return;
-    }
-    if (is_punc(ch)) {
+    } else if (is_punc(ch)) {
       // return { type: "punc", value: input.next() };
       read_punc();
       return;
-    }
-    if (is_op_char(ch)) {
+    } else if (is_op_char(ch)) {
       // return { type: "op", value: read_while(is_op_char)};
       read_op_char();
       return;
@@ -215,26 +209,25 @@ void read_next(void) {
 void token_init(char *ptr) { input_init(ptr); };
 
 void token_peek(token_t *token) {
-  // return current || (current = read_next());
   if (current.unempty == 0) {
     read_next();
   }
   memcpy(token, &current, sizeof(token_t));
 }
 
-void token_next() {
+void token_next(void) {
   // memset(&current, 0x00, sizeof(token_t));
   read_next();
-}
-
-int token_eof(void) {
-  debug_printf("token_eof: %d\n", current.unempty);
-  return (current.unempty == 0);
 }
 
 void token_croak(char *str) {
   input_croak(str);
   _exit(0);
+}
+
+int token_is_eof(void) {
+  debug_printf("token_eof: %d\n", current.unempty);
+  return (current.unempty == 0);
 }
 
 int token_is_punc(char *ch) {

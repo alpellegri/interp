@@ -21,8 +21,9 @@ A_expList_p parseExpList(void);
 
 char *parse_varname() {
   token_t tok;
-  memset(&tok, 0x00, sizeof(token_t));
+
   token_peek(&tok);
+  debug_printf("parse_varname: token_peek %s\n", tok.value);
   if (tok.type != token_var) {
     printf("Expecting variable name: %d <-> %d\n", tok.type, token_var);
     token_croak("Expecting variable name");
@@ -131,7 +132,9 @@ A_stm_p parseStm(void) {
   if (token_is_var(&tok) == 1) {
     char *varname = parse_varname();
     token_next();
+    debug_printf("parseStm: =1\n");
     token_skip_op("=");
+    debug_printf("parseStm: =2\n");
     stm = A_AssignStm(varname, parseExp());
   } else if (token_is_kw("print") == 1) {
     token_next();
@@ -169,6 +172,7 @@ A_stm_p parseStm(void) {
 }
 
 A_stmList_p parseStmList(void) {
+  int i = 0;
   int run = 1;
   token_t tok;
   A_stmList_p head;
@@ -183,7 +187,7 @@ A_stmList_p parseStmList(void) {
     debug_printf("parseProg } found\n");
     run = 0;
   }
-  if (token_eof() == 1) {
+  if (token_is_eof() == 1) {
     run = 0;
   }
 
@@ -196,7 +200,7 @@ A_stmList_p parseStmList(void) {
       debug_printf("parseProg } found\n");
       run = 0;
     }
-    if (token_eof() == 1) {
+    if (token_is_eof() == 1) {
       run = 0;
     }
     stmList = stmList->tail;

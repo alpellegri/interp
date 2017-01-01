@@ -22,10 +22,12 @@ typedef struct token_s {
   token_value_t value;
 } token_t;
 
+typedef token_t* token_p;
+
 extern void token_init(char *ptr);
 extern void token_peek(token_t *token);
 extern void token_next();
-extern int token_eof(void);
+extern int token_is_eof(void);
 extern void token_croak(char *str);
 extern int token_is_punc(char *ch);
 extern int token_is_var(token_t *tok);

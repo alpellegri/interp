@@ -23,7 +23,7 @@ char input_charAt(int pos) {
   return input_input[pos];
 }
 
-char input_next() {
+char input_next(void) {
   debug_printf("InputStream->next %d\n", pos);
   char ch = input_charAt(input_pos++);
   if (ch == '\n') {
@@ -44,4 +44,4 @@ int input_eof(void) {
   return input_peek() == '\0';
 }
 
-void input_croak(char *str) { printf("croak char: %s \n", str); }
+void input_croak(char *str) { printf("input croak char: %s \n", str); }
