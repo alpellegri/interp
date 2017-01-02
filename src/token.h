@@ -23,9 +23,9 @@ typedef struct token_s {
 } token_t;
 
 extern void token_init(char *ptr);
-extern int token_peek(token_t *token);
-extern int token_next();
-extern int token_eof(void);
+extern void token_peek(token_t *token);
+extern void token_next();
+extern int token_is_eof(void);
 extern void token_croak(char *str);
 extern int token_is_punc(char *ch);
 extern int token_is_var(token_t *tok);
@@ -33,6 +33,7 @@ extern int token_is_kw(char *kw);
 extern int token_is_op(char *op);
 extern int token_is_op_tok(void);
 extern int token_is_num(void);
+extern int token_is_string(void);
 extern void token_skip_punc(char *ch);
 extern void token_skip_kw(char *kw);
 extern void token_skip_op(char *op);

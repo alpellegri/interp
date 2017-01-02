@@ -10,6 +10,15 @@
  * print(a);
  */
 
+A_stmList_p prog_test0(void) {
+  return A_StmList(A_PrintStm(A_ExpList(A_StrExp("Hello World!"), NULL)), NULL);
+}
+
+/*
+ * a := 5;
+ * print(a);
+ */
+
 A_stmList_p prog_test1(void) {
   return A_StmList(A_AssignStm("a", A_NumExp(5)),
                    A_StmList(A_PrintStm(A_ExpList(A_IdExp("a"), NULL)), NULL));

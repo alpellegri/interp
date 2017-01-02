@@ -9,13 +9,14 @@ extern "C" {
 #endif
 
 /* store value of variables */
-typedef struct table_s *Table_;
+typedef struct table_s *table_p;
 typedef struct table_s {
   string id;
   int value;
-  Table_ tail;
+  string str;
+  table_p tail;
 } table_t;
-extern Table_ Table(string id, int value, Table_ tail);
+extern table_p Table(string id, int value, table_p tail);
 
 /*
  * Interpreting expressions is more complicated than interpreting statements,
@@ -28,15 +29,15 @@ extern Table_ Table(string id, int value, Table_ tail);
 typedef struct intAndTable_s *IntAndTable_p;
 typedef struct intAndTable_s {
   int i;
-  Table_ t;
+  string str;
+  table_p t;
 } intAndTable_t;
-extern IntAndTable_p IntAndTable(int i, Table_ t);
+extern IntAndTable_p IntAndTable(int i, table_p t);
 
 /*
  * "Interpret" a program in this language.
  */
-extern Table_ interpStmList(A_stmList_p stm, Table_ ctx);
-extern void interper(A_stmList_p stmList);
+extern void interp(A_stmList_p stmList);
 
 /*
  * Produce a new table from the specified table.  The new table is just like
@@ -44,7 +45,8 @@ extern void interper(A_stmList_p stmList);
  * as
  * a result of the given statement.
  */
-extern Table_ interpStm(A_stm_p s, Table_ t);
+extern table_p interpStmList(A_stmList_p stm, table_p ctx);
+extern table_p interpStm(A_stm_p s, table_p t);
 
 /*
  * The result of interpreting an expression e1 with table t1 is an integer
@@ -52,14 +54,14 @@ extern Table_ interpStm(A_stm_p s, Table_ t);
  * subexpressions (such as an OpExp), the table t2 resulting from the first
  * subexpression can be used in processing the second subexpression.
  */
-extern IntAndTable_p interpExp(A_exp_p e, Table_ t);
-extern IntAndTable_p interpExpList(A_expList_p expList, Table_ t);
+extern IntAndTable_p interpExp(A_exp_p e, table_p t);
+extern IntAndTable_p interpExpList(A_expList_p expList, table_p t);
 
 /*
  * Put a new element at the head of the linked list.
  */
-extern Table_ update(Table_ t, string id, int value);
-extern int lookup(Table_ t, string key);
+extern table_p update(table_p t, string id, int value);
+extern int lookup(table_p t, string key);
 
 #ifdef __cplusplus
 }

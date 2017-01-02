@@ -29,9 +29,9 @@ void display_expList(A_expList_p expList) {
 }
 
 // struct A_exp_ {
-//   enum { A_idExp, A_numExp, A_opExp, A_eseqExp } kind;
-char *A_exp_decriptor[4] = {
-    "A_idExp", "A_numExp", "A_opExp", "A_eseqExp",
+//   enum { A_idExp, A_numExp, A_strExp, A_opExp, A_eseqExp } kind;
+char *A_exp_decriptor[5] = {
+    "A_idExp", "A_numExp", "A_strExp", "A_opExp", "A_eseqExp",
 };
 // enum { A_add, A_sub, A_mul, A_div, A_eq, A_ne, A_le, A_lt, A_ge, A_gt }
 // A_binop;
@@ -150,6 +150,14 @@ A_exp_p A_NumExp(int num) {
   A_exp_p e = checked_malloc(sizeof *e);
   e->kind = A_numExp;
   e->u.num = num;
+  return e;
+}
+
+A_exp_p A_StrExp(string str) {
+  debug_printf("spl create A_IdExp\n");
+  A_exp_p e = checked_malloc(sizeof *e);
+  e->kind = A_strExp;
+  e->u.str = str;
   return e;
 }
 
