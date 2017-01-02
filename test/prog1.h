@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 A_stmList_p prog(void);
+A_stmList_p prog_test0(void);
 A_stmList_p prog_test1(void);
 A_stmList_p prog_test2(void);
 A_stmList_p prog_test3(void);
