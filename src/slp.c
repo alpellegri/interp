@@ -45,6 +45,8 @@ void display_exp(A_exp_p exp) {
     printf("_%s_\n", exp->u.id);
   } else if (exp->kind == A_numExp) {
     printf("_%d_\n", exp->u.num);
+  } else if (exp->kind == A_strExp) {
+    printf("_%s_\n", exp->u.str);
   } else if (exp->kind == A_opExp) {
     display_exp(exp->u.op.left);
     printf("_%s_\n", A_binop_decriptor[exp->u.op.oper]);
