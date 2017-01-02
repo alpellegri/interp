@@ -33,6 +33,7 @@ extern int token_is_kw(char *kw);
 extern int token_is_op(char *op);
 extern int token_is_op_tok(void);
 extern int token_is_num(void);
+extern int token_is_string(void);
 extern void token_skip_punc(char *ch);
 extern void token_skip_kw(char *kw);
 extern void token_skip_op(char *op);

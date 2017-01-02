@@ -248,6 +248,27 @@ int token_is_var(token_t *tok) {
   return ret;
 }
 
+int token_is_num(void) {
+  token_t tok;
+  int ret = 0;
+  token_peek(&tok);
+  // return tok && tok.type == "op" && (!op || tok.value == op) && tok;
+  if (tok.type == token_num) {
+    ret = 1;
+  }
+  return ret;
+}
+
+int token_is_string(void) {
+  token_t tok;
+  int ret = 0;
+  token_peek(&tok);
+  if (tok.type == token_str) {
+    ret = 1;
+  }
+  return ret;
+}
+
 int token_is_kw(char *kw) {
   token_t tok;
   int ret = 0;
@@ -273,17 +294,6 @@ int token_is_op_tok(void) {
   int ret = 0;
   token_peek(&tok);
   if (tok.type == token_op) {
-    ret = 1;
-  }
-  return ret;
-}
-
-int token_is_num(void) {
-  token_t tok;
-  int ret = 0;
-  token_peek(&tok);
-  // return tok && tok.type == "op" && (!op || tok.value == op) && tok;
-  if (tok.type == token_num) {
     ret = 1;
   }
   return ret;

@@ -11,6 +11,8 @@ int main(void) {
   // char code[] = "print(1);\n"
   //               "print(2);\n";
 
+  // char code[] = "print(\n\"Hello World!\n\");\n";
+
   // char code[] = "a = 5;\n"
   //               "print(a);\n";
 
@@ -43,7 +45,8 @@ int main(void) {
   //               "  print(2);\n"
   //               "};\n";
 
-  char code[] = "a = 1;\n"
+  char code[] = "print(\n\"Hello World!\n\");\n"
+                "a = 1;\n"
                 "if (a < 2) {\n"
                 "  print(1);\n"
                 "  print(3);\n"

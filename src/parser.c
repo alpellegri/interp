@@ -50,6 +50,10 @@ A_exp_p parse_atom(void) {
     exp = A_IdExp(_strdup(tok.value));
     token_next();
     return exp;
+  } else if (token_is_string() == 1) {
+    exp = A_StrExp(_strdup(tok.value));
+    token_next();
+    return exp;
   }
 
   printf("error parseExp\n");
