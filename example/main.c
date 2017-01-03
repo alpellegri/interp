@@ -25,18 +25,18 @@ int main(void) {
   //               "b = 10*a;\n"
   //               "print(b);\n";
 
-  // char code[] = "a = 1;\n"
-  //               "print(a);\n"
-  //               "a = a+1;\n"
-  //               "print(a);\n"
-  //               "a = a+1;\n"
-  //               "print(a);\n"
-  //               "a = a+1;\n"
-  //               "print(a);\n"
-  //               "a = a+1;\n"
-  //               "print(a);\n"
-  //               "a = a+1;\n"
-  //               "print(a);\n";
+  char code[] = "a = 1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n"
+                "a = a+1;\n"
+                "print(a);\n";
 
   // char code[] = "a = 1;\n"
   //               "if (a > 2) {\n"
@@ -45,15 +45,15 @@ int main(void) {
   //               "  print(2);\n"
   //               "};\n";
 
-  char code[] = "print(\n\"Hello World!\n\");\n"
-                "a = 1;\n"
-                "if (a < 2) {\n"
-                "  print(1);\n"
-                "  print(3);\n"
-                "} else {\n"
-                "  print(2);\n"
-                "  print(4);\n"
-                "};\n";
+  // char code[] = "print(\n\"Hello World!\n\");\n"
+  //               "a = 1;\n"
+  //               "if (a < 2) {\n"
+  //               "  print(1);\n"
+  //               "  print(3);\n"
+  //               "} else {\n"
+  //               "  print(2);\n"
+  //               "  print(4);\n"
+  //               "};\n";
 
   printf("*\n");
   printf("load program\n");
