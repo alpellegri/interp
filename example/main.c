@@ -8,10 +8,15 @@
 int main(void) {
   A_stmList_p prog;
 
+  // char code[] = "print(2);\n";
+
   // char code[] = "print(1);\n"
-  //               "print(2);\n";
+  //               "print(2);\n"
+  //               "print(3);\n";
 
   // char code[] = "print(\n\"Hello World!\n\");\n";
+
+  // char code[] = "a = 5;\n";
 
   // char code[] = "a = 5;\n"
   //               "print(a);\n";
@@ -47,7 +52,7 @@ int main(void) {
 
   char code[] = "print(\n\"Hello World!\n\");\n"
                 "a = 1;\n"
-                "if (a < 2) {\n"
+                "if (a > 1) {\n"
                 "  print(1);\n"
                 "  print(3);\n"
                 "} else {\n"
@@ -75,6 +80,11 @@ int main(void) {
   printf("*\n");
   // the evaluation function
   interp(prog);
+
+  printf("*\n");
+  printf("destroy prog\n");
+  printf("*\n");
+  destroy_stmList(prog);
 
   return 0;
 }
