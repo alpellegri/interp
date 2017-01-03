@@ -103,9 +103,10 @@ void *checked_malloc(unsigned int len) {
     printf("Ran out of memory!\n");
     _exit(1);
   } else {
-    // debug_printf("malloc ptr %x, size: %d\n", (unsigned int)p, len);
+#ifdef DEBUG
     mk_node((unsigned int)p, len);
     display_nodes();
+#endif
   }
   return p;
 }
@@ -115,12 +116,13 @@ void checked_free(void *p) {
     printf("checked_free error\n");
     _exit(1);
   } else {
+#ifdef DEBUG
     node_p node;
-    // debug_printf("free ptr %x\n", (unsigned int)p);
     node = rm_node((unsigned int)p);
     free(node);
-    free(p);
     display_nodes();
+#endif
+    free(p);
   }
 }
 
