@@ -102,6 +102,11 @@ extern void display_stm(A_stm_p stm);
 extern void display_exp(A_exp_p exp);
 extern void display_expList(A_expList_p expList);
 
+extern void destroy_stmList(A_stmList_p stmList);
+extern void destroy_stm(A_stm_p stm);
+extern void destroy_exp(A_exp_p exp);
+extern void destroy_expList(A_expList_p expList);
+
 #ifdef __cplusplus
 }
 #endif

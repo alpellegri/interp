@@ -34,10 +34,10 @@ void display_nodes() {
   // start from the beginning
   while (ptr != NULL) {
     mem += ptr->data;
-    // printf("(%d,%d)\n", ptr->key, ptr->data);
+    // printf("(%x,%d)\n", ptr->key, ptr->data);
     ptr = ptr->next;
   }
-  printf("display_nodes memory: %d\n", mem);
+  debug_printf("display_nodes memory: %d\n", mem);
 }
 
 // insert link at the first location
@@ -57,10 +57,13 @@ node_p rm_node(unsigned int key) {
   // start from the first link
   node_p curr = node_head;
   node_p prev = NULL;
+
   // if list is empty
   if (node_head == NULL) {
+    printf("rm_node: NULL node!\n");
     return NULL;
   }
+
   // navigate through list
   while (curr->key != key) {
     // if it is last node
@@ -73,6 +76,7 @@ node_p rm_node(unsigned int key) {
       curr = curr->next;
     }
   }
+
   // found a match, update the link
   if (curr == node_head) {
     // change first to point to next link
@@ -81,11 +85,13 @@ node_p rm_node(unsigned int key) {
     // bypass the curr link
     prev->next = curr->next;
   }
+
   return curr;
 }
 
 /* helper function */
 char *_strdup(const char *s) {
+  debug_printf("_strdup\n");
   char *d = checked_malloc(strlen(s) + 1); // Space for length plus nul
   if (d == NULL) {
     return NULL; // No memory
@@ -104,6 +110,7 @@ void *checked_malloc(unsigned int len) {
     _exit(1);
   } else {
 #ifdef DEBUG
+    debug_printf("checked_malloc %x, %d\n", (unsigned int)p, len);
     mk_node((unsigned int)p, len);
     display_nodes();
 #endif
@@ -119,7 +126,12 @@ void checked_free(void *p) {
 #ifdef DEBUG
     node_p node;
     node = rm_node((unsigned int)p);
-    free(node);
+    debug_printf("checked_free %x,%d\n", (unsigned int)p, node->data);
+    if (node != 0) {
+      free(node);
+    } else {
+      debug_printf("checked_free: node not found!\n");
+    }
     display_nodes();
 #endif
     free(p);
@@ -132,9 +144,9 @@ string String(char *s) {
   return p;
 }
 
-U_boolList U_BoolList(bool head, U_boolList tail) {
-  U_boolList list = checked_malloc(sizeof(*list));
-  list->head = head;
-  list->tail = tail;
-  return list;
-}
+// U_boolList U_BoolList(bool head, U_boolList tail) {
+//   U_boolList list = checked_malloc(sizeof(*list));
+//   list->head = head;
+//   list->tail = tail;
+//   return list;
+// }
