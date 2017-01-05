@@ -71,32 +71,27 @@ IntAndTable_p StrAndTable(string str, table_p t) {
 #endif
 
 int lookup(table_p t, string key) {
-  table_p temp = t;
-  while (temp != NULL) {
-    if (strcmp(temp->id, key) == 0) {
+  while (t != NULL) {
+    if (strcmp(t->id, key) == 0) {
       return t->value;
     }
-    temp = temp->tail;
+    t = t->tail;
   }
 
   /* This should not happen! */
   assert(!"Table_t pointer should not be NULL!");
 }
 
-int remove_old_id(table_p t, string key) {
-  table_p temp = t;
-  while (temp->tail != NULL) {
-    if (strcmp(temp->tail->id, key) == 0) {
-      table_p temp2 = temp->tail;
-      if (temp->tail->tail != NULL) {
-        temp->tail = temp->tail->tail;
-      } else {
-        temp->tail = NULL;
-      }
-      checked_free(temp2);
+int remove_obsolete_id(table_p t, string key) {
+  table_p next = t->tail;
+  while (next != NULL) {
+    if (strcmp(next->id, key) == 0) {
+      t->tail = next->tail;
+      checked_free(next);
       return 1;
     }
-    temp = temp->tail;
+    t = t->tail;
+    next = t->tail;
   }
   return 0;
 }
@@ -104,7 +99,8 @@ int remove_old_id(table_p t, string key) {
 // construct a new Table on the head
 table_p update(table_p t, string id, int value) {
   t = Table(id, value, t);
-  remove_old_id(t, id);
+  remove_obsolete_id(t, id);
+  Table_display(t);
   return t;
 }
 
