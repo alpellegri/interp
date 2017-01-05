@@ -70,21 +70,20 @@ int main(void) {
   printf("*\n");
   prog = parse();
 
-  // printf("*\n");
-  // printf("display program\n");
-  // printf("*\n");
-  // display_stmList(prog);
+  printf("*\n");
+  printf("display program\n");
+  printf("*\n");
+  parse_display(prog);
 
   printf("*\n");
   printf("interp program\n");
   printf("*\n");
-  // the evaluation function
   interp(prog);
 
   printf("*\n");
   printf("destroy prog\n");
   printf("*\n");
-  destroy_stmList(prog);
+  parse_destroy(prog);
 
   return 0;
 }

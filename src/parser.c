@@ -14,12 +14,12 @@
 #define debug_printf(fmt, args...) /* Don't do anything in release builds */
 #endif
 
-A_stmList_p parseStmList(void);
-A_stm_p parseStm(void);
-A_exp_p parseExp(void);
-A_expList_p parseExpList(void);
+static A_stmList_p parseStmList(void);
+static A_stm_p parseStm(void);
+static A_exp_p parseExp(void);
+static A_expList_p parseExpList(void);
 
-char *parse_varname() {
+static char *parse_varname() {
   token_t tok;
 
   token_peek(&tok);
@@ -31,7 +31,7 @@ char *parse_varname() {
   return _strdup(tok.value);
 }
 
-A_exp_p parse_atom(void) {
+static A_exp_p parse_atom(void) {
   A_exp_p exp;
   token_t tok;
 
@@ -61,7 +61,7 @@ A_exp_p parse_atom(void) {
   return NULL;
 }
 
-A_exp_p maybeBinary(A_exp_p left, int prec) {
+static A_exp_p maybeBinary(A_exp_p left, int prec) {
   A_exp_p right;
   token_t tok;
   token_peek(&tok);
@@ -101,14 +101,14 @@ A_exp_p maybeBinary(A_exp_p left, int prec) {
   return left;
 }
 
-A_exp_p parseExp(void) {
+static A_exp_p parseExp(void) {
   token_t tok;
   token_peek(&tok);
   debug_printf("parseExp: token_peek %s\n", tok.value);
   return maybeBinary(parse_atom(), 0);
 }
 
-A_expList_p parseExpList(void) {
+static A_expList_p parseExpList(void) {
   A_expList_p explist;
   token_t tok;
 
@@ -128,7 +128,7 @@ A_expList_p parseExpList(void) {
   return NULL;
 }
 
-A_stm_p parseStm(void) {
+static A_stm_p parseStm(void) {
   token_t tok;
   A_stm_p stm;
 
@@ -176,7 +176,7 @@ A_stm_p parseStm(void) {
   return NULL;
 }
 
-A_stmList_p parseStmList(void) {
+static A_stmList_p parseStmList(void) {
   int i = 0;
   int run = 1;
   token_t tok;
@@ -184,7 +184,7 @@ A_stmList_p parseStmList(void) {
   A_stmList_p stmList;
 
   token_peek(&tok);
-  debug_printf("\nparseProg [%d]\n", i++);
+  debug_printf("\nparseProg stm[%d]\n", i++);
   stmList = A_StmList(parseStm(), NULL);
   token_skip_punc(";");
   head = stmList;
@@ -197,7 +197,7 @@ A_stmList_p parseStmList(void) {
   }
 
   while (run == 1) {
-    debug_printf("\nparseProg [%d]\n", i++);
+    debug_printf("\nparseProg stm[%d]\n", i++);
     stmList->tail = A_StmList(parseStm(), NULL);
     token_skip_punc(";");
 
@@ -215,8 +215,22 @@ A_stmList_p parseStmList(void) {
 }
 
 void parse_init(char *ptr) {
+  debug_printf("parse_init\n");
   /* init token */
   token_init(ptr);
 };
 
-A_stmList_p parse(void) { return parseStmList(); }
+A_stmList_p parse(void) {
+  debug_printf("parse\n");
+  return parseStmList();
+}
+
+void parse_destroy(A_stmList_p stmList) {
+  debug_printf("parse_destroy\n");
+  A_stmList_destroy(stmList);
+}
+
+void parse_display(A_stmList_p stmList) {
+  debug_printf("parse_destroy\n");
+  A_stmList_display(stmList);
+}

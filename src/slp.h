@@ -97,15 +97,15 @@ struct A_expList_s {
 } A_expList_t;
 extern A_expList_p A_ExpList(A_exp_p head, A_expList_p tail);
 
-extern void display_stmList(A_stmList_p stmList);
-extern void display_stm(A_stm_p stm);
-extern void display_exp(A_exp_p exp);
-extern void display_expList(A_expList_p expList);
+extern void A_stmList_display(A_stmList_p stmList);
+extern void A_stm_display(A_stm_p stm);
+extern void A_exp_display(A_exp_p exp);
+extern void A_expList_display(A_expList_p expList);
 
-extern void destroy_stmList(A_stmList_p stmList);
-extern void destroy_stm(A_stm_p stm);
-extern void destroy_exp(A_exp_p exp);
-extern void destroy_expList(A_expList_p expList);
+extern void A_stmList_destroy(A_stmList_p stmList);
+extern void A_stm_destroy(A_stm_p stm);
+extern void A_exp_destroy(A_exp_p exp);
+extern void A_exp_destroyList(A_expList_p expList);
 
 #ifdef __cplusplus
 }
