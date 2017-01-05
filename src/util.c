@@ -8,7 +8,7 @@
 
 #include "util.h"
 
-// #define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #define debug_printf(fmt, args...) printf(fmt, ##args)
 #else

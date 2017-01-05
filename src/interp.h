@@ -35,11 +35,6 @@ typedef struct intAndTable_s {
 extern IntAndTable_p IntAndTable(int i, table_p t);
 
 /*
- * "Interpret" a program in this language.
- */
-extern void interp(A_stmList_p stmList);
-
-/*
  * Produce a new table from the specified table.  The new table is just like
  * the original one except that some identifiers map to different integers
  * as
@@ -62,6 +57,18 @@ extern IntAndTable_p interpExpList(A_expList_p expList, table_p t);
  */
 extern table_p update(table_p t, string id, int value);
 extern int lookup(table_p t, string key);
+
+/*
+ * "Interpret" a program in this language.
+ */
+extern void interp(A_stmList_p stmList);
+
+/*
+ * "Interpret" a program stm by stm
+ */
+extern void interp_Stm_init(A_stmList_p stmList);
+extern unsigned int interp_Stm(void);
+extern void interp_Stm_destroy(void);
 
 #ifdef __cplusplus
 }

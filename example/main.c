@@ -70,15 +70,23 @@ int main(void) {
   printf("*\n");
   prog = parse();
 
-  printf("*\n");
-  printf("display program\n");
-  printf("*\n");
-  parse_display(prog);
+  // printf("*\n");
+  // printf("display program\n");
+  // printf("*\n");
+  // parse_display(prog);
 
   printf("*\n");
   printf("interp program\n");
   printf("*\n");
   interp(prog);
+
+  printf("*\n");
+  printf("interp_Stm program\n");
+  printf("*\n");
+  interp_Stm_init(prog);
+  while (interp_Stm() == 1)
+    ;
+  interp_Stm_destroy();
 
   printf("*\n");
   printf("destroy prog\n");
