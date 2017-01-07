@@ -67,19 +67,30 @@ int main(void) {
   //               "  print(4);\n"
   //               "};\n";
 
+  // char code[] = "print(\"Hello World!\n\");\n"
+  //               "b = 2;\n"
+  //               "a = 1;\n"
+  //               "if (a < b) {\n"
+  //               "  print(\"then\n\");\n"
+  //               "  print(a);\n"
+  //               "  print(\"\n\");\n"
+  //               "} else {\n"
+  //               "  print(\"else\n\");\n"
+  //               "  print(b);\n"
+  //               "  print(\"\n\");\n"
+  //               "};\n"
+  //               "print(b);\n"
+  //               "print(\"\n\");\n";
+
   char code[] = "print(\"Hello World!\n\");\n"
-                "b = 2;\n"
-                "a = 1;\n"
-                "if (a < b) {\n"
-                "  print(\"then\n\");\n"
+                "a = 0;\n"
+                "while (a < 5) {\n"
+                "  print(\"iteration \");\n"
                 "  print(a);\n"
                 "  print(\"\n\");\n"
-                "} else {\n"
-                "  print(\"else\n\");\n"
-                "  print(b);\n"
-                "  print(\"\n\");\n"
+                "  a = a + 1;\n"
                 "};\n"
-                "print(b);\n"
+                "print(a);\n"
                 "print(\"\n\");\n";
 
   printf("*\n");

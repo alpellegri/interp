@@ -39,10 +39,11 @@ extern A_stmList_p A_StmList(A_stm_p head, A_stmList_p tail);
 /*
  * Stm -> id := Exp      (AssignStm)
  * Stm -> print(ExpList) (PrintStm)
+ * Stm -> function(ExpList) (FunctionStm)
  * Stm -> if(Exp)        (IfStm)
  */
 struct A_stm_s {
-  enum { A_assignStm, A_printStm, A_ifStm } kind;
+  enum { A_assignStm, A_printStm, A_functionStm, A_ifStm, A_whileStm } kind;
   union {
     struct {
       string id;
@@ -52,15 +53,24 @@ struct A_stm_s {
       A_expList_p exps;
     } print;
     struct {
+      A_expList_p exps;
+    } function;
+    struct {
       A_exp_p cond;
       A_stmList_p then;
       A_stmList_p otherwise;
     } if_kw;
+    struct {
+      A_exp_p cond;
+      A_stmList_p body;
+    } while_kw;
   } u;
 } A_stm_t;
 extern A_stm_p A_AssignStm(string id, A_exp_p exp);
 extern A_stm_p A_PrintStm(A_expList_p exps);
+extern A_stm_p A_FunctionStm(A_expList_p exps);
 extern A_stm_p A_IfStm(A_exp_p cond, A_stmList_p then, A_stmList_p otherwise);
+extern A_stm_p A_WhileStm(A_exp_p cond, A_stmList_p body);
 
 /*
  * Exp -> id             (IdExp)

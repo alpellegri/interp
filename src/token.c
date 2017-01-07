@@ -14,7 +14,7 @@
 #define debug_printf(fmt, args...) /* Don't do anything in release builds */
 #endif
 
-const char keywords[] = " print if else ";
+const char keywords[] = " print if else while ";
 const char digit[] = "0123456789";
 const char id_start[] = "abcdefghikjlmnopqrstuvzwxy_";
 const char id[] = "?!-<>=0123456789";

@@ -27,11 +27,19 @@ A_stm_p A_AssignStm(string id, A_exp_p exp) {
   return s;
 }
 
-A_stm_p A_PrintStm(A_expList_p exps) {
+A_stm_p A_PrintStm(A_expList_p expList) {
   debug_printf("spl create A_PrintStm\n");
   A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_printStm;
-  s->u.print.exps = exps;
+  s->u.print.exps = expList;
+  return s;
+}
+
+A_stm_p A_FunctionStm(A_expList_p expList) {
+  debug_printf("spl create A_FunctionStm\n");
+  A_stm_p s = checked_malloc(sizeof *s);
+  s->kind = A_functionStm;
+  s->u.function.exps = expList;
   return s;
 }
 
@@ -42,6 +50,15 @@ A_stm_p A_IfStm(A_exp_p cond, A_stmList_p then, A_stmList_p otherwise) {
   s->u.if_kw.cond = cond;
   s->u.if_kw.then = then;
   s->u.if_kw.otherwise = otherwise;
+  return s;
+}
+
+A_stm_p A_WhileStm(A_exp_p cond, A_stmList_p body) {
+  debug_printf("spl create A_WhileStm\n");
+  A_stm_p s = checked_malloc(sizeof *s);
+  s->kind = A_whileStm;
+  s->u.while_kw.cond = cond;
+  s->u.while_kw.body = body;
   return s;
 }
 
@@ -136,8 +153,8 @@ void A_exp_display(A_exp_p exp) {
 
 // struct A_stm_ {
 //   enum { A_assignStm, A_printStm, A_ifStm } kind;
-char *A_stm_decriptor[3] = {
-    "A_assignStm", "A_printStm", "A_ifStm",
+char *A_stm_decriptor[4] = {
+    "A_assignStm", "A_printStm", "A_ifStm", "A_whileStm",
 };
 
 void A_stm_display(A_stm_p stm) {
@@ -161,6 +178,17 @@ void A_stm_display(A_stm_p stm) {
     }
     if (stm->u.if_kw.otherwise != NULL) {
       A_stmList_display(stm->u.if_kw.otherwise);
+    }
+  } else if (stm->kind == A_whileStm) {
+    if (stm->u.while_kw.cond != NULL) {
+      A_exp_display(stm->u.while_kw.cond);
+    } else {
+      printf("A_stmStm error while_kw %s\n", A_stm_decriptor[stm->kind]);
+    }
+    if (stm->u.while_kw.body != NULL) {
+      A_stmList_display(stm->u.while_kw.body);
+    } else {
+      printf("A_stmStm error while_kw %s\n", A_stm_decriptor[stm->kind]);
     }
   } else {
     printf("A_stmStm error %s\n", A_stm_decriptor[stm->kind]);
@@ -248,6 +276,19 @@ void A_stm_destroy(A_stm_p stm) {
       A_stmList_destroy(stm->u.if_kw.otherwise);
     }
     debug_printf("A_stm_destroy A_ifStm\n");
+    checked_free(stm);
+  } else if (stm->kind == A_whileStm) {
+    if (stm->u.while_kw.cond != NULL) {
+      A_exp_destroy(stm->u.while_kw.cond);
+    } else {
+      printf("A_stmStm error while_kw %s\n", A_stm_decriptor[stm->kind]);
+    }
+    if (stm->u.while_kw.body != NULL) {
+      A_stmList_destroy(stm->u.while_kw.body);
+    } else {
+      printf("A_stmStm error while_kw %s\n", A_stm_decriptor[stm->kind]);
+    }
+    debug_printf("A_stm_destroy A_whileStm\n");
     checked_free(stm);
   } else {
     printf("A_stm_destroy error\n");
