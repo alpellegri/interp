@@ -23,7 +23,7 @@ static char *parse_varname() {
   token_t tok;
 
   token_peek(&tok);
-  debug_printf("parse_varname: token_peek %s\n", tok.value);
+  debug_printf("parse_varname: token_peek: _%s_\n", tok.value);
   if (tok.type != token_var) {
     printf("Expecting variable name: %d <-> %d\n", tok.type, token_var);
     token_croak("Expecting variable name");
@@ -36,7 +36,7 @@ static A_exp_p parse_atom(void) {
   token_t tok;
 
   token_peek(&tok);
-  debug_printf("parse_atom: token_peek %s\n", tok.value);
+  debug_printf("parse_atom: token_peek: _%s_\n", tok.value);
   if (token_is_punc("(") == 1) {
     token_next();
     exp = parseExp();
@@ -65,7 +65,7 @@ static A_exp_p maybeBinary(A_exp_p left, int prec) {
   A_exp_p right;
   token_t tok;
   token_peek(&tok);
-  debug_printf("maybeBinary: token_peek %s\n", tok.value);
+  debug_printf("maybeBinary: token_peek: _%s_\n", tok.value);
   if (token_is_op_tok() == 1) {
     A_binop oper;
 
@@ -104,7 +104,7 @@ static A_exp_p maybeBinary(A_exp_p left, int prec) {
 static A_exp_p parseExp(void) {
   token_t tok;
   token_peek(&tok);
-  debug_printf("parseExp: token_peek %s\n", tok.value);
+  debug_printf("parseExp: token_peek: _%s_\n", tok.value);
   return maybeBinary(parse_atom(), 0);
 }
 
@@ -113,7 +113,7 @@ static A_expList_p parseExpList(void) {
   token_t tok;
 
   token_peek(&tok);
-  debug_printf("parseExpList: token_peek %s\n", tok.value);
+  debug_printf("parseExpList: token_peek: _%s_\n", tok.value);
   explist = A_ExpList(parseExp(), NULL);
   if (token_is_punc(",") == 1) {
     token_next();
@@ -133,13 +133,11 @@ static A_stm_p parseStm(void) {
   A_stm_p stm;
 
   token_peek(&tok);
-  debug_printf("parseStm: token_peek %s\n", tok.value);
+  debug_printf("parseStm: token_peek: _%s_\n", tok.value);
   if (token_is_var(&tok) == 1) {
     char *varname = parse_varname();
     token_next();
-    debug_printf("parseStm: =1\n");
     token_skip_op("=");
-    debug_printf("parseStm: =2\n");
     stm = A_AssignStm(varname, parseExp());
   } else if (token_is_kw("print") == 1) {
     token_next();
@@ -164,6 +162,17 @@ static A_stm_p parseStm(void) {
       token_skip_punc("}");
     }
     stm = A_IfStm(cond, then, otherwise);
+  } else if (token_is_kw("while") == 1) {
+    A_exp_p cond;
+    A_stmList_p body;
+    token_next();
+    token_skip_punc("(");
+    cond = parseExp();
+    token_skip_punc(")");
+    token_skip_punc("{");
+    body = parseStmList();
+    token_skip_punc("}");
+    stm = A_WhileStm(cond, body);
   }
 
   /* end of Stm */

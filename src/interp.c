@@ -83,6 +83,7 @@ int lookup(table_p t, string key) {
 }
 
 int remove_obsolete_id(table_p t, string key) {
+  debug_printf("remove_obsolete_id\n");
   table_p next = t->tail;
   while (next != NULL) {
     if (strcmp(next->id, key) == 0) {
@@ -98,6 +99,7 @@ int remove_obsolete_id(table_p t, string key) {
 
 // construct a new Table on the head
 table_p update(table_p t, string id, int value) {
+  debug_printf("update\n");
   t = Table(id, value, t);
   remove_obsolete_id(t, id);
   Table_display(t);
@@ -173,7 +175,6 @@ IntAndTable_p interpExpList(A_expList_p expList, table_p t) {
   switch (expList->kind) {
   case A_expList:
     it = interpExp(expList->head, t);
-    // printf("%d\n", it->i);
     if (expList->tail == NULL) {
       return it;
     } else {
@@ -190,10 +191,12 @@ table_p interpStm(A_stm_p s, table_p t) {
 
   switch (s->kind) {
   case A_assignStm:
+    debug_printf("A_assignStm\n");
     it = interpExp(s->u.assign.exp, t);
     t = update(it->t, s->u.assign.id, it->i);
     return t;
   case A_printStm:
+    debug_printf("A_printStm\n");
     it = interpExpList(s->u.print.exps, t);
     if (it->str == NULL) {
       printf("%d", it->i);
@@ -202,6 +205,7 @@ table_p interpStm(A_stm_p s, table_p t) {
     }
     return it->t;
   case A_ifStm:
+    debug_printf("A_ifStm\n");
     it = interpExp(s->u.if_kw.cond, t);
     if (it->i != 0) {
       t = interpStmList(s->u.if_kw.then, t);
@@ -209,6 +213,14 @@ table_p interpStm(A_stm_p s, table_p t) {
       if (s->u.if_kw.otherwise != NULL) {
         t = interpStmList(s->u.if_kw.otherwise, t);
       }
+    }
+    return it->t;
+  case A_whileStm:
+    debug_printf("A_whileStm\n");
+    it = interpExp(s->u.while_kw.cond, t);
+    while (it->i != 0) {
+      t = interpStmList(s->u.while_kw.body, t);
+      it = interpExp(s->u.while_kw.cond, t);
     }
     return it->t;
   default:
