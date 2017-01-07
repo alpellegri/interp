@@ -92,12 +92,12 @@ A_expList_p A_ExpList(A_exp_p head, A_expList_p tail) {
 //   enum { A_expList } kind;
 char *A_expList_decriptor[1] = {"A_expList"};
 
-void display_expList(A_expList_p expList) {
+void A_expList_display(A_expList_p expList) {
   printf("A_expList: %s\n", A_expList_decriptor[expList->kind]);
   if (expList->kind == A_expList) {
-    display_exp(expList->head);
+    A_exp_display(expList->head);
     if (expList->tail != NULL) {
-      display_expList(expList->tail);
+      A_expList_display(expList->tail);
     } else {
       printf("A_expList: end tail\n");
     }
@@ -117,7 +117,7 @@ char *A_binop_decriptor[10] = {
     "+", "-", "*", "/", "==", "!=", "<=", "<", ">=", ">",
 };
 
-void display_exp(A_exp_p exp) {
+void A_exp_display(A_exp_p exp) {
   printf("A_exp: %s\n", A_exp_decriptor[exp->kind]);
   if (exp->kind == A_idExp) {
     printf("_%s_\n", exp->u.id);
@@ -126,9 +126,9 @@ void display_exp(A_exp_p exp) {
   } else if (exp->kind == A_strExp) {
     printf("_%s_\n", exp->u.str);
   } else if (exp->kind == A_opExp) {
-    display_exp(exp->u.op.left);
+    A_exp_display(exp->u.op.left);
     printf("_%s_\n", A_binop_decriptor[exp->u.op.oper]);
-    display_exp(exp->u.op.right);
+    A_exp_display(exp->u.op.right);
   } else {
     printf("A_exp error %s\n", A_exp_decriptor[exp->kind]);
   }
@@ -140,27 +140,27 @@ char *A_stm_decriptor[3] = {
     "A_assignStm", "A_printStm", "A_ifStm",
 };
 
-void display_stm(A_stm_p stm) {
+void A_stm_display(A_stm_p stm) {
   printf("A_stmStm: %s\n", A_stm_decriptor[stm->kind]);
   if (stm->kind == A_assignStm) {
-    display_exp(stm->u.assign.exp);
+    A_exp_display(stm->u.assign.exp);
   } else if (stm->kind == A_printStm) {
     if (stm->u.print.exps != NULL) {
-      display_expList(stm->u.print.exps);
+      A_expList_display(stm->u.print.exps);
     }
   } else if (stm->kind == A_ifStm) {
     if (stm->u.if_kw.cond != NULL) {
-      display_exp(stm->u.if_kw.cond);
+      A_exp_display(stm->u.if_kw.cond);
     } else {
       printf("A_stmStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
     }
     if (stm->u.if_kw.then != NULL) {
-      display_stmList(stm->u.if_kw.then);
+      A_stmList_display(stm->u.if_kw.then);
     } else {
       printf("A_stmStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
     }
     if (stm->u.if_kw.otherwise != NULL) {
-      display_stmList(stm->u.if_kw.otherwise);
+      A_stmList_display(stm->u.if_kw.otherwise);
     }
   } else {
     printf("A_stmStm error %s\n", A_stm_decriptor[stm->kind]);
@@ -171,96 +171,96 @@ void display_stm(A_stm_p stm) {
 //   enum { A_assignStm, A_printStm, A_ifStm } kind;
 char *A_stmList_decriptor[1] = {"A_StmList"};
 
-void display_stmList(A_stmList_p stmList) {
-  printf("display_stmList: %s\n", A_stmList_decriptor[stmList->kind]);
-  display_stm(stmList->head);
+void A_stmList_display(A_stmList_p stmList) {
+  printf("A_stmList_display: %s\n", A_stmList_decriptor[stmList->kind]);
+  A_stm_display(stmList->head);
   if (stmList->tail != NULL) {
-    display_stmList(stmList->tail);
+    A_stmList_display(stmList->tail);
   } else {
     printf("A_stmList: end of A_stmList\n");
   }
 }
 
-void destroy_expList(A_expList_p expList) {
-  debug_printf("destroy_expList entry\n");
+void A_exp_destroyList(A_expList_p expList) {
+  debug_printf("A_exp_destroyList entry\n");
   if (expList->kind == A_expList) {
     if (expList->tail != NULL) {
-      destroy_expList(expList->tail);
+      A_exp_destroyList(expList->tail);
     }
     if (expList->head != NULL) {
-      destroy_exp(expList->head);
-      debug_printf("destroy_expList\n");
+      A_exp_destroy(expList->head);
+      debug_printf("A_exp_destroyList\n");
       checked_free(expList);
     }
   } else {
-    printf("destroy_exp error\n");
+    printf("A_exp_destroy error\n");
   }
 }
 
-void destroy_exp(A_exp_p exp) {
-  debug_printf("destroy_exp entry\n");
+void A_exp_destroy(A_exp_p exp) {
+  debug_printf("A_exp_destroy entry\n");
   if (exp->kind == A_idExp) {
-    debug_printf("destroy_exp A_idExp\n");
+    debug_printf("A_exp_destroy A_idExp\n");
     checked_free(exp->u.id);
     checked_free(exp);
   } else if (exp->kind == A_numExp) {
-    debug_printf("destroy_exp A_numExp\n");
+    debug_printf("A_exp_destroy A_numExp\n");
     checked_free(exp);
   } else if (exp->kind == A_strExp) {
-    debug_printf("destroy_exp A_strExp\n");
+    debug_printf("A_exp_destroy A_strExp\n");
     checked_free(exp->u.str);
     checked_free(exp);
   } else if (exp->kind == A_opExp) {
-    destroy_exp(exp->u.op.left);
-    destroy_exp(exp->u.op.right);
-    debug_printf("destroy_exp A_opExp\n");
+    A_exp_destroy(exp->u.op.left);
+    A_exp_destroy(exp->u.op.right);
+    debug_printf("A_exp_destroy A_opExp\n");
     checked_free(exp);
   } else {
-    printf("destroy_exp error\n");
+    printf("A_exp_destroy error\n");
   }
 }
 
-void destroy_stm(A_stm_p stm) {
-  debug_printf("destroy_stm entry\n");
+void A_stm_destroy(A_stm_p stm) {
+  debug_printf("A_stm_destroy entry\n");
   if (stm->kind == A_assignStm) {
-    destroy_exp(stm->u.assign.exp);
-    debug_printf("destroy_stm A_assignStm\n");
+    A_exp_destroy(stm->u.assign.exp);
+    debug_printf("A_stm_destroy A_assignStm\n");
     checked_free(stm->u.assign.id);
     checked_free(stm);
   } else if (stm->kind == A_printStm) {
     if (stm->u.print.exps != NULL) {
-      destroy_expList(stm->u.print.exps);
-      debug_printf("destroy_stm A_printStm\n");
+      A_exp_destroyList(stm->u.print.exps);
+      debug_printf("A_stm_destroy A_printStm\n");
       checked_free(stm);
     }
   } else if (stm->kind == A_ifStm) {
     if (stm->u.if_kw.cond != NULL) {
-      destroy_exp(stm->u.if_kw.cond);
+      A_exp_destroy(stm->u.if_kw.cond);
     } else {
       printf("A_stmStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
     }
     if (stm->u.if_kw.then != NULL) {
-      destroy_stmList(stm->u.if_kw.then);
+      A_stmList_destroy(stm->u.if_kw.then);
     } else {
       printf("A_stmStm error if_kw %s\n", A_stm_decriptor[stm->kind]);
     }
     if (stm->u.if_kw.otherwise != NULL) {
-      destroy_stmList(stm->u.if_kw.otherwise);
+      A_stmList_destroy(stm->u.if_kw.otherwise);
     }
-    debug_printf("destroy_stm A_ifStm\n");
+    debug_printf("A_stm_destroy A_ifStm\n");
     checked_free(stm);
   } else {
-    printf("destroy_stm error\n");
+    printf("A_stm_destroy error\n");
   }
 }
 
-void destroy_stmList(A_stmList_p stmList) {
+void A_stmList_destroy(A_stmList_p stmList) {
   A_stmList_p next = stmList->tail;
-  debug_printf("destroy_stmList entry\n");
-  destroy_stm(stmList->head);
-  debug_printf("destroy_stmList\n");
+  debug_printf("A_stmList_destroy entry\n");
+  A_stm_destroy(stmList->head);
+  debug_printf("A_stmList_destroy\n");
   checked_free(stmList);
   if (next != NULL) {
-    destroy_stmList(next);
+    A_stmList_destroy(next);
   }
 }

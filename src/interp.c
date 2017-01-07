@@ -6,13 +6,33 @@
 #include "slp.h"
 #include "util.h"
 
-void display_Table(table_p t) {
+// #define DEBUG
+#ifdef DEBUG
+#define debug_printf(fmt, args...) printf(fmt, ##args)
+#else
+#define debug_printf(fmt, args...) /* Don't do anything in release builds */
+#endif
+
+void Table_display(table_p t) {
   table_p temp = t;
-  printf("display_Table\n");
+  debug_printf("Table_display\n");
   while (temp != NULL) {
-    printf("ptr: %x, id: %s, value: %d\n", (unsigned int)temp, temp->id,
-           temp->value);
+    debug_printf("ptr: %x, id: %s, value: %d\n", (unsigned int)temp, temp->id,
+                 temp->value);
     temp = temp->tail;
+  }
+}
+
+void Table_destroy(table_p t) {
+  table_p temp;
+  debug_printf("Table_destroy\n");
+  while (t != NULL) {
+    /* take a copy of tail */
+    temp = t->tail;
+    debug_printf("ptr: %x, id: %s, value: %d\n", (unsigned int)t, t->id,
+                 t->value);
+    checked_free(t);
+    t = temp;
   }
 }
 
@@ -51,32 +71,27 @@ IntAndTable_p StrAndTable(string str, table_p t) {
 #endif
 
 int lookup(table_p t, string key) {
-  table_p temp = t;
-  while (temp != NULL) {
-    if (strcmp(temp->id, key) == 0) {
+  while (t != NULL) {
+    if (strcmp(t->id, key) == 0) {
       return t->value;
     }
-    temp = temp->tail;
+    t = t->tail;
   }
 
   /* This should not happen! */
   assert(!"Table_t pointer should not be NULL!");
 }
 
-int remove_old_id(table_p t, string key) {
-  table_p temp = t;
-  while (temp->tail != NULL) {
-    if (strcmp(temp->tail->id, key) == 0) {
-      table_p temp2 = temp->tail;
-      if (temp->tail->tail != NULL) {
-        temp->tail = temp->tail->tail;
-      } else {
-        temp->tail = NULL;
-      }
-      checked_free(temp2);
+int remove_obsolete_id(table_p t, string key) {
+  table_p next = t->tail;
+  while (next != NULL) {
+    if (strcmp(next->id, key) == 0) {
+      t->tail = next->tail;
+      checked_free(next);
       return 1;
     }
-    temp = temp->tail;
+    t = t->tail;
+    next = t->tail;
   }
   return 0;
 }
@@ -84,8 +99,8 @@ int remove_old_id(table_p t, string key) {
 // construct a new Table on the head
 table_p update(table_p t, string id, int value) {
   t = Table(id, value, t);
-  remove_old_id(t, id);
-  // display_Table(t);
+  remove_obsolete_id(t, id);
+  Table_display(t);
   return t;
 }
 
@@ -143,7 +158,7 @@ IntAndTable_p interpExp(A_exp_p e, table_p t) {
       /* This should not happen! */
       assert(!"Wrong value for A_exp_p->u.op.oper!");
     }
-    // printf("A_opExp lvalue: %d, rvalue: %d\n", lval, rval);
+    debug_printf("A_opExp lvalue: %d, rvalue: %d\n", lval, rval);
     return IntAndTable(value, it_tmp->t);
   }
   default:
@@ -207,6 +222,7 @@ table_p interpStm(A_stm_p s, table_p t) {
 table_p interpStmList(A_stmList_p stmList, table_p ctx) {
   while (stmList != NULL) {
     ctx = interpStm(stmList->head, ctx);
+    /* move to next */
     stmList = stmList->tail;
   }
   return ctx;
@@ -215,4 +231,32 @@ table_p interpStmList(A_stmList_p stmList, table_p ctx) {
 void interp(A_stmList_p stmList) {
   table_p ctx = NULL;
   ctx = interpStmList(stmList, ctx);
+  /* cleanup context */
+  Table_destroy(ctx);
+}
+
+static table_p interp_Stm_ctx = NULL;
+static A_stmList_p interp_Stm_stmList;
+
+void interp_Stm_init(A_stmList_p stmList) {
+  /* init */
+  interp_Stm_stmList = stmList;
+}
+
+unsigned int interp_Stm(void) {
+  unsigned int ret = 0;
+
+  if (interp_Stm_stmList != NULL) {
+    interp_Stm_ctx = interpStm(interp_Stm_stmList->head, interp_Stm_ctx);
+    /* move to next */
+    interp_Stm_stmList = interp_Stm_stmList->tail;
+    ret = 1;
+  }
+
+  return ret;
+}
+
+void interp_Stm_destroy(void) {
+  /* cleanup context */
+  Table_destroy(interp_Stm_ctx);
 }
