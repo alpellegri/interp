@@ -81,7 +81,7 @@ extern A_stm_p A_WhileStm(A_exp_p cond, A_stmList_p body);
  * Exp -> Exp Binop Exp  (OpExp)
  */
 struct A_exp_s {
-  enum { A_idExp, A_numExp, A_strExp, A_opExp } kind;
+  enum { A_idExp, A_numExp, A_strExp, A_opExp, A_functionExp } kind;
   union {
     string id;
     int num;
@@ -91,12 +91,17 @@ struct A_exp_s {
       A_binop oper;
       A_exp_p right;
     } op;
+    struct {
+      string id;
+      A_expList_p params;
+    } function;
   } u;
 } A_exp_t;
 extern A_exp_p A_IdExp(string id);
 extern A_exp_p A_NumExp(int num);
 extern A_exp_p A_StrExp(string str);
 extern A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right);
+extern A_exp_p A_FunctionExp(string id, A_expList_p params);
 
 /*
  * ExpList -> Exp, ExpList  (ExpList)

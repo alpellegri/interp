@@ -6,7 +6,7 @@
 #include "slp.h"
 #include "util.h"
 
-// #define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #define debug_printf(fmt, args...) printf(fmt, ##args)
 #else
@@ -163,6 +163,9 @@ IntAndTable_p interpExp(A_exp_p e, table_p t) {
     debug_printf("A_opExp lvalue: %d, rvalue: %d\n", lval, rval);
     return IntAndTable(value, it_tmp->t);
   }
+  case A_functionExp: {
+    return &_it;
+  } break;
   default:
     /* This should not happen! */
     assert(!"Wrong kind-value for A_exp_p!");
@@ -197,13 +200,21 @@ table_p interpStm(A_stm_p s, table_p t) {
     return t;
   case A_printStm:
     debug_printf("A_printStm\n");
-    it = interpExpList(s->u.print.exps, t);
-    if (it->str == NULL) {
-      printf("%d", it->i);
-    } else {
-      printf("%s", it->str);
+    A_expList_p list;
+    list = s->u.print.exps;
+    while (list != NULL) {
+      it = interpExp(list->head, t);
+      if (it->str == NULL) {
+        printf("%d", it->i);
+      } else {
+        printf("%s", it->str);
+      }
+      list = list->tail;
     }
     return it->t;
+  case A_functionStm:
+    debug_printf("A_functionStm\n");
+    return t;
   case A_ifStm:
     debug_printf("A_ifStm\n");
     it = interpExp(s->u.if_kw.cond, t);

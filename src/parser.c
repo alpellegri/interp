@@ -7,7 +7,7 @@
 #include "token.h"
 #include "util.h"
 
-#define DEBUG
+// #define DEBUG
 #ifdef DEBUG
 #define debug_printf(fmt, args...) printf(fmt, ##args)
 #else
@@ -101,26 +101,51 @@ static A_exp_p maybeBinary(A_exp_p left, int prec) {
   return left;
 }
 
+static A_exp_p parseCall(A_exp_p expr) {
+  string id = NULL;
+  A_expList_p params;
+  token_t tok;
+  token_peek(&tok);
+  debug_printf("parseCall: token_peek: _%s_\n", tok.value);
+  token_skip_punc("(");
+  params = parseExpList();
+  token_skip_punc(")");
+  return A_FunctionExp(id, params);
+}
+
+static A_exp_p maybeCall(A_exp_p expr) {
+  token_t tok;
+  token_peek(&tok);
+  debug_printf("maybeCall: token_peek: _%s_\n", tok.value);
+  if (token_is_punc("(") == 1) {
+    expr = parseCall(expr);
+  }
+  return expr;
+}
+
 static A_exp_p parseExp(void) {
   token_t tok;
   token_peek(&tok);
   debug_printf("parseExp: token_peek: _%s_\n", tok.value);
-  return maybeBinary(parse_atom(), 0);
+  return maybeCall(maybeBinary(parse_atom(), 0));
 }
 
-// better a iterative-while than recursive
 static A_expList_p parseExpList(void) {
   A_expList_p explist;
+  A_expList_p next;
   token_t tok;
 
   token_peek(&tok);
   debug_printf("parseExpList: token_peek: _%s_\n", tok.value);
   explist = A_ExpList(parseExp(), NULL);
-  if (token_is_punc(",") == 1) {
+  next = explist;
+  while (token_is_punc(",") == 1) {
     token_next();
-    explist->tail = parseExpList();
-    return explist;
-  } else if (token_is_punc(")") == 1) {
+    next->tail = A_ExpList(parseExp(), NULL);
+    next = next->tail;
+  }
+
+  if (token_is_punc(")") == 1) {
     return explist;
   }
 
@@ -136,17 +161,27 @@ static A_stm_p parseStm(void) {
   token_peek(&tok);
   debug_printf("parseStm: token_peek: _%s_\n", tok.value);
   if (token_is_var(&tok) == 1) {
+    debug_printf("token_is_var\n");
     char *varname = parse_varname();
     token_next();
+    token_peek(&tok);
     if (token_is_op("=")) {
+      debug_printf("A_AssignStm\n");
       token_next();
       stm = A_AssignStm(varname, parseExp());
-    } else if (token_is_op("(")) {
+    } else if (token_is_punc("(")) {
+      A_expList_p varlist;
+      A_stmList_p body;
+      debug_printf("A_FunctionStm\n");
       token_next();
-      stm = A_FunctionStm(varname, parseExpList(), parseStmList());
+      varlist = parseExpList();
       token_skip_punc(")");
+      token_skip_punc("{");
+      body = parseStmList();
+      token_skip_punc("}");
+      stm = A_FunctionStm(varname, varlist, body);
     } else {
-
+      debug_printf("A_FunctionStm error\n");
     }
   } else if (token_is_kw("print") == 1) {
     token_next();

@@ -98,6 +98,15 @@ A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right) {
   return e;
 }
 
+A_exp_p A_FunctionExp(string id, A_expList_p params) {
+  debug_printf("spl create A_FunctionExp\n");
+  A_exp_p e = checked_malloc(sizeof *e);
+  e->kind = A_functionExp;
+  e->u.function.id = id;
+  e->u.function.params = params;
+  return e;
+}
+
 A_expList_p A_ExpList(A_exp_p head, A_expList_p tail) {
   debug_printf("spl create A_ExpList\n");
   A_expList_p e = checked_malloc(sizeof *e);
@@ -123,7 +132,7 @@ void A_expList_display(A_expList_p expList) {
 }
 
 char *A_exp_decriptor[5] = {
-    "A_idExp", "A_numExp", "A_strExp", "A_opExp", "A_eseqExp",
+    "A_idExp", "A_numExp", "A_strExp", "A_opExp", "A_functionExp",
 };
 char *A_binop_decriptor[10] = {
     "+", "-", "*", "/", "==", "!=", "<=", "<", ">=", ">",
@@ -140,6 +149,9 @@ void A_exp_display(A_exp_p exp) {
     A_exp_display(exp->u.op.left);
     printf("_%s_\n", A_binop_decriptor[exp->u.op.oper]);
     A_exp_display(exp->u.op.right);
+  } else if (exp->kind == A_functionExp) {
+    printf("_%s_\n", exp->u.function.id);
+    A_expList_display(exp->u.function.params);
   } else {
     printf("A_exp error %s\n", A_exp_decriptor[exp->kind]);
   }

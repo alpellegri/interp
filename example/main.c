@@ -14,6 +14,9 @@ int main(void) {
   //               "print(2);\n"
   //               "print(3);\n";
 
+  // char code[] = "a = 5;\n"
+  //               "print(1, 2, 3, a);\n";
+
   // char code[] = "print(\"Hello World!\n\");\n";
 
   // char code[] = "a = 5;\n";
@@ -94,11 +97,12 @@ int main(void) {
   //               "print(\"\n\");\n";
 
   char code[] = "print(\"Hello World!\n\");\n"
-                "a = 0;\n"
-                "func (a, b) {\n"
-                "  a + b;\n"
+                "a = 1;\n"
+                "b = 1;\n"
+                "func(x, y) {\n"
+                "  z = x + y;\n"
                 "};\n"
-                "print(a);\n"
+                "print(func(1,2));\n"
                 "print(\"\n\");\n";
 
   printf("*\n");
@@ -116,10 +120,10 @@ int main(void) {
   // printf("*\n");
   // parse_display(prog);
 
-  // printf("*\n");
-  // printf("interp program\n");
-  // printf("*\n");
-  // interp(prog);
+  printf("*\n");
+  printf("interp program\n");
+  printf("*\n");
+  interp(prog);
 
   // printf("*\n");
   // printf("interp_Stm program\n");
