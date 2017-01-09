@@ -35,11 +35,13 @@ A_stm_p A_PrintStm(A_expList_p expList) {
   return s;
 }
 
-A_stm_p A_FunctionStm(A_expList_p expList) {
+A_stm_p A_FunctionStm(string id, A_expList_p expList, A_stmList_p body) {
   debug_printf("spl create A_FunctionStm\n");
   A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_functionStm;
+  s->u.function.id = id;
   s->u.function.exps = expList;
+  s->u.function.body = body;
   return s;
 }
 
@@ -105,10 +107,7 @@ A_expList_p A_ExpList(A_exp_p head, A_expList_p tail) {
   return e;
 }
 
-// struct A_expList_ {
-//   enum { A_expList } kind;
 char *A_expList_decriptor[1] = {"A_expList"};
-
 void A_expList_display(A_expList_p expList) {
   printf("A_expList: %s\n", A_expList_decriptor[expList->kind]);
   if (expList->kind == A_expList) {
@@ -123,17 +122,12 @@ void A_expList_display(A_expList_p expList) {
   }
 }
 
-// struct A_exp_ {
-//   enum { A_idExp, A_numExp, A_strExp, A_opExp, A_eseqExp } kind;
 char *A_exp_decriptor[5] = {
     "A_idExp", "A_numExp", "A_strExp", "A_opExp", "A_eseqExp",
 };
-// enum { A_add, A_sub, A_mul, A_div, A_eq, A_ne, A_le, A_lt, A_ge, A_gt }
-// A_binop;
 char *A_binop_decriptor[10] = {
     "+", "-", "*", "/", "==", "!=", "<=", "<", ">=", ">",
 };
-
 void A_exp_display(A_exp_p exp) {
   printf("A_exp: %s\n", A_exp_decriptor[exp->kind]);
   if (exp->kind == A_idExp) {
@@ -151,10 +145,8 @@ void A_exp_display(A_exp_p exp) {
   }
 }
 
-// struct A_stm_ {
-//   enum { A_assignStm, A_printStm, A_ifStm } kind;
-char *A_stm_decriptor[4] = {
-    "A_assignStm", "A_printStm", "A_ifStm", "A_whileStm",
+char *A_stm_decriptor[5] = {
+    "A_assignStm", "A_printStm", "A_functionStm", "A_ifStm", "A_whileStm",
 };
 
 void A_stm_display(A_stm_p stm) {
@@ -164,6 +156,16 @@ void A_stm_display(A_stm_p stm) {
   } else if (stm->kind == A_printStm) {
     if (stm->u.print.exps != NULL) {
       A_expList_display(stm->u.print.exps);
+    }
+  } else if (stm->kind == A_functionStm) {
+    printf("_%s_\n", stm->u.function.id);
+    if (stm->u.function.exps != NULL) {
+      A_expList_display(stm->u.function.exps);
+      if (stm->u.function.body != NULL) {
+        A_stmList_display(stm->u.function.body);
+      } else {
+        printf("A_stmStm error function %s\n", A_stm_decriptor[stm->kind]);
+      }
     }
   } else if (stm->kind == A_ifStm) {
     if (stm->u.if_kw.cond != NULL) {
@@ -195,10 +197,7 @@ void A_stm_display(A_stm_p stm) {
   }
 }
 
-// struct A_stm_ {
-//   enum { A_assignStm, A_printStm, A_ifStm } kind;
 char *A_stmList_decriptor[1] = {"A_StmList"};
-
 void A_stmList_display(A_stmList_p stmList) {
   printf("A_stmList_display: %s\n", A_stmList_decriptor[stmList->kind]);
   A_stm_display(stmList->head);
@@ -260,6 +259,16 @@ void A_stm_destroy(A_stm_p stm) {
       A_exp_destroyList(stm->u.print.exps);
       debug_printf("A_stm_destroy A_printStm\n");
       checked_free(stm);
+    } else {
+    }
+  } else if (stm->kind == A_functionStm) {
+    checked_free(stm->u.function.id);
+    if (stm->u.function.exps != NULL) {
+      A_exp_destroyList(stm->u.function.exps);
+      A_stmList_destroy(stm->u.function.body);
+      debug_printf("A_stm_destroy A_functionStm\n");
+      checked_free(stm);
+    } else {
     }
   } else if (stm->kind == A_ifStm) {
     if (stm->u.if_kw.cond != NULL) {

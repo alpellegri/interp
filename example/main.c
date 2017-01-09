@@ -82,13 +82,21 @@ int main(void) {
   //               "print(b);\n"
   //               "print(\"\n\");\n";
 
+  // char code[] = "print(\"Hello World!\n\");\n"
+  //               "a = 0;\n"
+  //               "while (a < 5) {\n"
+  //               "  print(\"iteration \");\n"
+  //               "  print(a);\n"
+  //               "  print(\"\n\");\n"
+  //               "  a = a + 1;\n"
+  //               "};\n"
+  //               "print(a);\n"
+  //               "print(\"\n\");\n";
+
   char code[] = "print(\"Hello World!\n\");\n"
                 "a = 0;\n"
-                "while (a < 5) {\n"
-                "  print(\"iteration \");\n"
-                "  print(a);\n"
-                "  print(\"\n\");\n"
-                "  a = a + 1;\n"
+                "func (a, b) {\n"
+                "  a + b;\n"
                 "};\n"
                 "print(a);\n"
                 "print(\"\n\");\n";
@@ -108,10 +116,10 @@ int main(void) {
   // printf("*\n");
   // parse_display(prog);
 
-  printf("*\n");
-  printf("interp program\n");
-  printf("*\n");
-  interp(prog);
+  // printf("*\n");
+  // printf("interp program\n");
+  // printf("*\n");
+  // interp(prog);
 
   // printf("*\n");
   // printf("interp_Stm program\n");
@@ -121,10 +129,10 @@ int main(void) {
   //   ;
   // interp_Stm_destroy();
 
-  printf("*\n");
-  printf("destroy prog\n");
-  printf("*\n");
-  parse_destroy(prog);
+  // printf("*\n");
+  // printf("destroy prog\n");
+  // printf("*\n");
+  // parse_destroy(prog);
 
   return 0;
 }

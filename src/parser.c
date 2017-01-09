@@ -7,7 +7,7 @@
 #include "token.h"
 #include "util.h"
 
-// #define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #define debug_printf(fmt, args...) printf(fmt, ##args)
 #else
@@ -108,6 +108,7 @@ static A_exp_p parseExp(void) {
   return maybeBinary(parse_atom(), 0);
 }
 
+// better a iterative-while than recursive
 static A_expList_p parseExpList(void) {
   A_expList_p explist;
   token_t tok;
@@ -137,8 +138,16 @@ static A_stm_p parseStm(void) {
   if (token_is_var(&tok) == 1) {
     char *varname = parse_varname();
     token_next();
-    token_skip_op("=");
-    stm = A_AssignStm(varname, parseExp());
+    if (token_is_op("=")) {
+      token_next();
+      stm = A_AssignStm(varname, parseExp());
+    } else if (token_is_op("(")) {
+      token_next();
+      stm = A_FunctionStm(varname, parseExpList(), parseStmList());
+      token_skip_punc(")");
+    } else {
+
+    }
   } else if (token_is_kw("print") == 1) {
     token_next();
     token_skip_punc("(");
