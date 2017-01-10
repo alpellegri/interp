@@ -36,13 +36,24 @@ void Table_destroy(table_p t) {
   }
 }
 
-// linked list of variables (id,value)
+/* linked list of variables (id,value) */
 table_p Table(string id, int value, table_p tail) {
   table_p t = checked_malloc(sizeof(*t));
   t->id = id;
   t->value = value;
   t->tail = tail;
   // display_Table(t);
+  return t;
+}
+
+/* linked list of function definitions */
+table_function_p TableFunction(string id, A_expList_p vars, A_stmList_p body, table_function_p tail) {
+  table_function_p t = checked_malloc(sizeof(*t));
+  t->id = id;
+  t->vars = vars;
+  t->body = body;
+  t->tail = tail;
+  // display_TableFunction(t);
   return t;
 }
 
@@ -172,6 +183,7 @@ IntAndTable_p interpExp(A_exp_p e, table_p t) {
   }
 }
 
+#if 0
 IntAndTable_p interpExpList(A_expList_p expList, table_p t) {
   IntAndTable_p it;
 
@@ -188,6 +200,7 @@ IntAndTable_p interpExpList(A_expList_p expList, table_p t) {
     assert(!"Wrong kind-value for A_expList_p->kind.");
   }
 }
+#endif
 
 table_p interpStm(A_stm_p s, table_p t) {
   IntAndTable_p it;

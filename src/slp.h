@@ -54,7 +54,7 @@ struct A_stm_s {
     } print;
     struct {
       string id;
-      A_expList_p exps;
+      A_expList_p vars;
       A_stmList_p body;
     } function;
     struct {
@@ -70,7 +70,7 @@ struct A_stm_s {
 } A_stm_t;
 extern A_stm_p A_AssignStm(string id, A_exp_p exp);
 extern A_stm_p A_PrintStm(A_expList_p exps);
-extern A_stm_p A_FunctionStm(string id, A_expList_p exps, A_stmList_p body);
+extern A_stm_p A_FunctionStm(string id, A_expList_p vars, A_stmList_p body);
 extern A_stm_p A_IfStm(A_exp_p cond, A_stmList_p then, A_stmList_p otherwise);
 extern A_stm_p A_WhileStm(A_exp_p cond, A_stmList_p body);
 
@@ -93,7 +93,7 @@ struct A_exp_s {
     } op;
     struct {
       string id;
-      A_expList_p params;
+      A_expList_p args;
     } function;
   } u;
 } A_exp_t;
@@ -101,7 +101,7 @@ extern A_exp_p A_IdExp(string id);
 extern A_exp_p A_NumExp(int num);
 extern A_exp_p A_StrExp(string str);
 extern A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right);
-extern A_exp_p A_FunctionExp(string id, A_expList_p params);
+extern A_exp_p A_FunctionExp(string id, A_expList_p args);
 
 /*
  * ExpList -> Exp, ExpList  (ExpList)

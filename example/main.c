@@ -85,25 +85,26 @@ int main(void) {
   //               "print(b);\n"
   //               "print(\"\n\");\n";
 
+  char code[] = "print(\"Hello World!\n\");\n"
+                "a = 0;\n"
+                "while (a < 5) {\n"
+                "  print(\"iteration \");\n"
+                "  print(a);\n"
+                "  print(\"\n\");\n"
+                "  a = a + 1;\n"
+                "};\n"
+                "print(a);\n"
+                "print(\"\n\");\n";
+
   // char code[] = "print(\"Hello World!\n\");\n"
-  //               "a = 0;\n"
-  //               "while (a < 5) {\n"
-  //               "  print(\"iteration \");\n"
-  //               "  print(a);\n"
-  //               "  print(\"\n\");\n"
-  //               "  a = a + 1;\n"
+  //               "a = 1;\n"
+  //               "b = 1;\n"
+  //               "func(x, y) {\n"
+  //               "  z = x + y;\n"
   //               "};\n"
-  //               "print(a);\n"
+  //               "print(func(a,b));\n"
   //               "print(\"\n\");\n";
 
-  char code[] = "print(\"Hello World!\n\");\n"
-                "a = 1;\n"
-                "b = 1;\n"
-                "func(x, y) {\n"
-                "  z = x + y;\n"
-                "};\n"
-                "print(func(1,2));\n"
-                "print(\"\n\");\n";
 
   printf("*\n");
   printf("load program\n");

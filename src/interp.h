@@ -18,6 +18,23 @@ typedef struct table_s {
 } table_t;
 extern table_p Table(string id, int value, table_p tail);
 
+/* store stm entry point of each function definition */
+typedef struct table_function_s *table_function_p;
+typedef struct table_function_s {
+  string id;
+  A_expList_p vars;
+  A_stmList_p body;
+  table_function_p tail;
+} table_function_t;
+extern table_function_p TableFunction(string id, A_expList_p vars, A_stmList_p body, table_function_p tail);
+
+/* interp context */
+typedef struct interp_ctx_s *interp_ctx_p;
+typedef struct interp_ctx_s {
+  table_p vars;
+  table_function_p functions;
+} interp_ctx_t;
+
 /*
  * Interpreting expressions is more complicated than interpreting statements,
  * because expressions return integer values AND have side effects.  We wish

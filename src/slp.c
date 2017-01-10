@@ -35,12 +35,12 @@ A_stm_p A_PrintStm(A_expList_p expList) {
   return s;
 }
 
-A_stm_p A_FunctionStm(string id, A_expList_p expList, A_stmList_p body) {
+A_stm_p A_FunctionStm(string id, A_expList_p vars, A_stmList_p body) {
   debug_printf("spl create A_FunctionStm\n");
   A_stm_p s = checked_malloc(sizeof *s);
   s->kind = A_functionStm;
   s->u.function.id = id;
-  s->u.function.exps = expList;
+  s->u.function.vars = vars;
   s->u.function.body = body;
   return s;
 }
@@ -98,12 +98,12 @@ A_exp_p A_OpExp(A_exp_p left, A_binop oper, A_exp_p right) {
   return e;
 }
 
-A_exp_p A_FunctionExp(string id, A_expList_p params) {
+A_exp_p A_FunctionExp(string id, A_expList_p args) {
   debug_printf("spl create A_FunctionExp\n");
   A_exp_p e = checked_malloc(sizeof *e);
   e->kind = A_functionExp;
   e->u.function.id = id;
-  e->u.function.params = params;
+  e->u.function.args = args;
   return e;
 }
 
@@ -151,7 +151,7 @@ void A_exp_display(A_exp_p exp) {
     A_exp_display(exp->u.op.right);
   } else if (exp->kind == A_functionExp) {
     printf("_%s_\n", exp->u.function.id);
-    A_expList_display(exp->u.function.params);
+    A_expList_display(exp->u.function.args);
   } else {
     printf("A_exp error %s\n", A_exp_decriptor[exp->kind]);
   }
@@ -171,8 +171,8 @@ void A_stm_display(A_stm_p stm) {
     }
   } else if (stm->kind == A_functionStm) {
     printf("_%s_\n", stm->u.function.id);
-    if (stm->u.function.exps != NULL) {
-      A_expList_display(stm->u.function.exps);
+    if (stm->u.function.vars != NULL) {
+      A_expList_display(stm->u.function.vars);
       if (stm->u.function.body != NULL) {
         A_stmList_display(stm->u.function.body);
       } else {
@@ -220,15 +220,15 @@ void A_stmList_display(A_stmList_p stmList) {
   }
 }
 
-void A_exp_destroyList(A_expList_p expList) {
-  debug_printf("A_exp_destroyList entry\n");
+void A_expList_destroy(A_expList_p expList) {
+  debug_printf("A_expList_destroy entry\n");
   if (expList->kind == A_expList) {
     if (expList->tail != NULL) {
-      A_exp_destroyList(expList->tail);
+      A_expList_destroy(expList->tail);
     }
     if (expList->head != NULL) {
       A_exp_destroy(expList->head);
-      debug_printf("A_exp_destroyList\n");
+      debug_printf("A_expList_destroy\n");
       checked_free(expList);
     }
   } else {
@@ -254,6 +254,11 @@ void A_exp_destroy(A_exp_p exp) {
     A_exp_destroy(exp->u.op.right);
     debug_printf("A_exp_destroy A_opExp\n");
     checked_free(exp);
+  } else if (exp->kind == A_functionExp) {
+    debug_printf("A_exp_destroy A_functionExp\n");
+    checked_free(exp->u.function.id);
+    A_expList_destroy(exp->u.function.args);
+    checked_free(exp);
   } else {
     printf("A_exp_destroy error\n");
   }
@@ -263,25 +268,23 @@ void A_stm_destroy(A_stm_p stm) {
   debug_printf("A_stm_destroy entry\n");
   if (stm->kind == A_assignStm) {
     A_exp_destroy(stm->u.assign.exp);
-    debug_printf("A_stm_destroy A_assignStm\n");
     checked_free(stm->u.assign.id);
+    debug_printf("A_stm_destroy A_assignStm\n");
     checked_free(stm);
   } else if (stm->kind == A_printStm) {
     if (stm->u.print.exps != NULL) {
-      A_exp_destroyList(stm->u.print.exps);
+      A_expList_destroy(stm->u.print.exps);
       debug_printf("A_stm_destroy A_printStm\n");
       checked_free(stm);
     } else {
+      debug_printf("A_stm_destroy A_printStm error\n");
     }
   } else if (stm->kind == A_functionStm) {
     checked_free(stm->u.function.id);
-    if (stm->u.function.exps != NULL) {
-      A_exp_destroyList(stm->u.function.exps);
-      A_stmList_destroy(stm->u.function.body);
-      debug_printf("A_stm_destroy A_functionStm\n");
-      checked_free(stm);
-    } else {
-    }
+    A_expList_destroy(stm->u.function.vars);
+    A_stmList_destroy(stm->u.function.body);
+    debug_printf("A_stm_destroy A_functionStm\n");
+    checked_free(stm);
   } else if (stm->kind == A_ifStm) {
     if (stm->u.if_kw.cond != NULL) {
       A_exp_destroy(stm->u.if_kw.cond);
