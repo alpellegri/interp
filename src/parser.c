@@ -7,7 +7,7 @@
 #include "token.h"
 #include "util.h"
 
-// #define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #define debug_printf(fmt, args...) printf(fmt, ##args)
 #else
@@ -32,28 +32,29 @@ static char *parse_varname() {
 }
 
 static A_exp_p parse_atom(void) {
-  A_exp_p exp;
+  A_exp_p expr;
   token_t tok;
 
   token_peek(&tok);
   debug_printf("parse_atom: token_peek: _%s_\n", tok.value);
   if (token_is_punc("(") == 1) {
+    debug_printf("skip (\n");
     token_next();
-    exp = parseExp();
+    expr = parseExp();
     token_skip_punc(")");
-    return exp;
+    return expr;
   } else if (token_is_num() == 1) {
-    exp = A_NumExp(atoi(tok.value));
+    expr = A_NumExp(atoi(tok.value));
     token_next();
-    return exp;
+    return expr;
   } else if (token_is_var(&tok) == 1) {
-    exp = A_IdExp(_strdup(tok.value));
+    expr = A_IdExp(_strdup(tok.value));
     token_next();
-    return exp;
+    return expr;
   } else if (token_is_string() == 1) {
-    exp = A_StrExp(_strdup(tok.value));
+    expr = A_StrExp(_strdup(tok.value));
     token_next();
-    return exp;
+    return expr;
   }
 
   printf("error parseExp\n");
@@ -62,6 +63,7 @@ static A_exp_p parse_atom(void) {
 }
 
 static A_exp_p maybeBinary(A_exp_p left, int prec) {
+  A_exp_p expr;
   A_exp_p right;
   token_t tok;
   token_peek(&tok);
@@ -71,7 +73,9 @@ static A_exp_p maybeBinary(A_exp_p left, int prec) {
 
     debug_printf("maybeBinary: token_is_op_tok\n");
     token_next();
-    right = maybeBinary(parse_atom(), 0);
+    expr = parse_atom();
+    // token_next();
+    right = maybeBinary(expr, 0);
     if ((strcmp("+", tok.value) == 0)) {
       oper = A_add;
     } else if ((strcmp("-", tok.value) == 0)) {
@@ -97,28 +101,37 @@ static A_exp_p maybeBinary(A_exp_p left, int prec) {
       _exit(0);
     }
     return A_OpExp(left, oper, right);
+  } else {
   }
   return left;
 }
 
 static A_exp_p parseCall(A_exp_p expr) {
-  string id = NULL;
+  string id;
   A_expList_p params;
   token_t tok;
   token_peek(&tok);
   debug_printf("parseCall: token_peek: _%s_\n", tok.value);
+  id = _strdup(tok.value);
   token_skip_punc("(");
   params = parseExpList();
   token_skip_punc(")");
+  debug_printf("parseCall: create call: _%s_\n", id);
   return A_FunctionExp(id, params);
 }
 
-static A_exp_p maybeCall(A_exp_p expr) {
+// static A_exp_p maybeCall(A_exp_p expr) {
+static A_exp_p maybeCall(void) {
   token_t tok;
   token_peek(&tok);
   debug_printf("maybeCall: token_peek: _%s_\n", tok.value);
+  A_exp_p expr = parse_atom();
   if (token_is_punc("(") == 1) {
+    debug_printf("maybeCall: call ok\n");
     expr = parseCall(expr);
+  } else {
+    debug_printf("maybeCall: not a call\n");
+    expr = maybeBinary(expr, 0);
   }
   return expr;
 }
@@ -127,7 +140,8 @@ static A_exp_p parseExp(void) {
   token_t tok;
   token_peek(&tok);
   debug_printf("parseExp: token_peek: _%s_\n", tok.value);
-  return maybeCall(maybeBinary(parse_atom(), 0));
+  // return maybeCall(maybeBinary(parse_atom(), 0));
+  return maybeCall();
 }
 
 static A_expList_p parseExpList(void) {

@@ -26,13 +26,14 @@ typedef struct table_function_s {
   A_stmList_p body;
   table_function_p tail;
 } table_function_t;
-extern table_function_p TableFunction(string id, A_expList_p vars, A_stmList_p body, table_function_p tail);
+extern table_function_p TableFunction(string id, A_expList_p vars,
+                                      A_stmList_p body, table_function_p tail);
 
 /* interp context */
 typedef struct interp_ctx_s *interp_ctx_p;
 typedef struct interp_ctx_s {
   table_p vars;
-  table_function_p functions;
+  table_function_p function;
 } interp_ctx_t;
 
 /*
@@ -57,8 +58,8 @@ extern IntAndTable_p IntAndTable(int i, table_p t);
  * as
  * a result of the given statement.
  */
-extern table_p interpStmList(A_stmList_p stm, table_p ctx);
-extern table_p interpStm(A_stm_p s, table_p t);
+extern void interpStmList(interp_ctx_p context, A_stmList_p stm);
+extern void interpStm(interp_ctx_p context, A_stm_p s);
 
 /*
  * The result of interpreting an expression e1 with table t1 is an integer
@@ -66,8 +67,8 @@ extern table_p interpStm(A_stm_p s, table_p t);
  * subexpressions (such as an OpExp), the table t2 resulting from the first
  * subexpression can be used in processing the second subexpression.
  */
-extern IntAndTable_p interpExp(A_exp_p e, table_p t);
-extern IntAndTable_p interpExpList(A_expList_p expList, table_p t);
+extern IntAndTable_p interpExp(interp_ctx_p context, A_exp_p e);
+extern IntAndTable_p interpExpList(interp_ctx_p context, A_expList_p expList);
 
 /*
  * Put a new element at the head of the linked list.
@@ -83,9 +84,9 @@ extern void interp(A_stmList_p stmList);
 /*
  * "Interpret" a program stm by stm
  */
-extern void interp_Stm_init(A_stmList_p stmList);
-extern unsigned int interp_Stm(void);
-extern void interp_Stm_destroy(void);
+extern void interp_init(A_stmList_p stmList);
+extern unsigned int interp_step(void);
+extern void interp_destroy(void);
 
 #ifdef __cplusplus
 }

@@ -215,9 +215,7 @@ void token_peek(token_t *token) {
   memcpy(token, &current, sizeof(token_t));
 }
 
-void token_next(void) {
-  read_next();
-}
+void token_next(void) { read_next(); }
 
 void token_croak(char *str) {
   input_croak(str);

@@ -105,7 +105,6 @@ int main(void) {
   //               "print(func(a,b));\n"
   //               "print(\"\n\");\n";
 
-
   printf("*\n");
   printf("load program\n");
   printf("*\n");
@@ -129,10 +128,10 @@ int main(void) {
   // printf("*\n");
   // printf("interp_Stm program\n");
   // printf("*\n");
-  // interp_Stm_init(prog);
-  // while (interp_Stm() == 1)
+  // interp_init(prog);
+  // while (interp_step() == 1)
   //   ;
-  // interp_Stm_destroy();
+  // interp_destroy();
 
   // printf("*\n");
   // printf("destroy prog\n");
